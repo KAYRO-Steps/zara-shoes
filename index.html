@@ -1,0 +1,1926 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZARA Shoes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f6f5f5;
+            padding-bottom: 70px; /* Espace pour le bouton sticky */
+        }
+        
+        .custom-radio input:checked + span {
+            border-color: #3b82f6;
+        }
+        
+        .summary-modal {
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .summary-modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .delivery-option {
+            transition: all 0.2s ease;
+        }
+        
+        .delivery-option:hover {
+            transform: translateY(-2px);
+        }
+        
+        .delivery-option input:checked + div {
+            border-color: #3b82f6;
+            background-color: #eff6ff;
+            box-shadow: 0 4px 6px rgba(59, 130, 246, 0.2);
+        }
+        
+        .product-image {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .product-image:hover {
+            transform: scale(1.03);
+        }
+        
+        .sticky-button {
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        
+        /* Animation classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in forwards;
+        }
+        
+        .slide-up {
+            animation: slideUp 0.5s ease-out forwards;
+        }
+        
+        .pulse {
+            animation: pulse 1.5s infinite;
+        }
+        
+        .bounce {
+            animation: bounce 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-15px); }
+            60% { transform: translateY(-7px); }
+        }
+        
+        .zoom-image {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .zoom-image.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .zoom-image img {
+            max-width: 90%;
+            max-height: 90%;
+            border: 3px solid white;
+            border-radius: 5px;
+            animation: zoomIn 0.3s ease-out;
+        }
+        
+        @keyframes zoomIn {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: #f00;
+            opacity: 0;
+            z-index: 10000;
+        }
+        
+        .error-border {
+            border-color: #e53e3e !important;
+        }
+        
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+        
+        .scroll-to-form {
+            animation: scrollToForm 1s ease;
+        }
+        
+        @keyframes scrollToForm {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0); }
+        }
+        /* Animation Pulse (en continu) */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+.pulse {
+  animation: pulse 1.2s infinite;
+}
+
+/* Animation Bounce (au clic) */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  30% { transform: translateY(-10px); }
+  60% { transform: translateY(-5px); }
+}
+.bounce {
+  animation: bounce 1s infinite;
+}
+/* Conteneur principal */
+.product-gallery {
+  display: flex;
+  flex-direction: column;   /* image principale au-dessus, miniatures en dessous */
+  align-items: center;      /* centre horizontalement */
+  gap: 10px;                /* espace entre image principale et miniatures */
+}
+
+/* Image principale */
+#mainImage {
+  max-width: 450px;         /* taille max (tu peux ajuster) */
+  width: 100%;
+  height: 450px;
+  border-radius: 10px;
+  display: block;
+  margin: 0 auto;           /* pour s'assurer que c'est centré */
+}
+
+/* Conteneur des miniatures */
+.thumbnails {
+  display: flex;
+  justify-content: center;
+  gap: 0;           /* espace contrôlé */
+}
+
+/* Miniatures */
+.thumbnail {
+  width: 30px;
+  height: 30px;
+  object-fit: cover;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0;          /* enlève toute marge */
+  padding: 0;         /* enlève tout padding */
+  display: block;     /* évite l'espace inline */
+  gap: 0;
+}
+
+.thumbnail:hover {
+  transform: scale(1.1);
+  border: 2px solid #333;
+}
+
+/* Conteneur de la galerie */
+.product-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); /* PC/Tablet */
+  gap: 15px;
+}
+
+/* Cartes produit */
+.product-card {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+/* Image produit */
+.product-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+}
+
+/* Effet hover */
+.product-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+/* -------- 📱 Mode téléphone -------- */
+@media (max-width: 600px) {
+  .product-gallery {
+    grid-template-columns: repeat(2, 1fr); /* 2 produits par ligne */
+    width: 120px;
+  }
+
+  .product-card img {
+    height: 120px; /* réduire un peu les images sur mobile */
+  }
+
+  .product-card h3 {
+    font-size: 14px;
+  }
+
+  .product-card p {
+    font-size: 12px;
+  }
+}
+
+
+    </style>
+
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1387463616346585');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1387463616346585&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
+
+</head>
+<body class="text-gray-800">
+    <!-- Image Zoom Container -->
+    <div class="zoom-image">
+        <img id="zoomed-img" src="" alt="Zoomed Image">
+    </div>
+    
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-blue-800 to-blue-600 py-3 px-4 shadow-lg fade-in">
+        <div class="container mx-auto">
+            <div class="flex items-center justify-between">
+                
+                <!-- Logo à GAUCHE -->
+                <div class="flex items-center">
+                    <img src="img/logo KAYRO Steps.jpg" alt="Logo" class="h-10 w-10 md:h-12 md:w-12 rounded-lg">
+                </div>
+    
+                <!-- Titre principal au MILIEU -->
+                <div class="text-center flex-1 mx-2 md:mx-4">
+                    <h1 class="text-xl md:text-3xl font-bold text-white">أحذية روعة - تشكيلة أنيقة</h1>
+                    <p class="text-blue-100 text-xs md:text-sm mt-1">جودة · راحة · أناقة</p>
+                </div>
+    
+                <!-- Bouton à DROITE -->
+                <div class="flex items-center">
+                    <a href="https://keyro-steps.netlify.app/" 
+                       class="bg-white/20 hover:bg-white/30 text-white px-2 py-1 md:px-4 md:py-2 rounded-lg transition duration-300 flex items-center space-x-2 space-x-reverse text-sm md:text-base">
+                        <i class="fas fa-store text-xs md:text-base"></i>
+                        <span>المتجر</span>
+                    </a>
+                </div>
+    
+            </div>
+        </div>
+    </header>
+
+   
+
+        <!-- Product Info -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8 slide-up" style="animation-delay: 0.2s">
+            <h2 class="text-2xl font-bold text-black-700 mb-4">حذاء ZARA أنيق للاستخدام اليومي، العمل أو المناسبات</h2>
+            
+            <div class="flex items-center mb-4">
+                <span class="text-3xl font-bold text-red-600">2900 دج</span>
+                <span class="text-sm-3x1 text-gray-500 mr-2 line-through">3500 دج</span>
+                <span class="bg-red-500 text-white text-xs px-2 py-1 rounded-full mr-2">خصم 17%</span>
+            </div>
+            
+             <div class="flex items-center text-yellow-500 mb-6">
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star"></i>
+                <i class="fas fa-star-half-alt" style="transform: scaleX(-1);"></i>
+                <span class="text-gray-600 text-sm mr-2">(تقييم خمسة نجوم من كثير من الزبائن)</span>
+            </div>
+            <p class="text-gray-700 mb-6 leading-relaxed">
+                أحذية عالية الجودة مصممة للراحة والأناقة، مناسبة للجامعة، العمل أو المناسبات اليومية. تتميز بتصميم عصري وجودة تصنيع ممتازة مع تفاصيل مبتكرة. متوفر بلونين كلاسيكيين ⚫⚪ يناسبو جميع الأذواق.
+                المقاسات متوفرة من 40 إلى 44
+                والتوصيل الى 58 ولاية. جودة عالية بسعر مناسب اطلب الآن قبل نفاذ الكمية !
+            </p>
+            
+           
+
+             <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+                <!-- Image principale -->
+    <!-- Image principale -->
+                <div class="relative mb-4">
+  <img id="mainImage" 
+       src="img/img1.jpg"
+       class="w-full h-96 object-cover rounded-lg shadow-lg transition duration-300">
+
+  <!-- Bouton précédent -->
+  <button onclick="prevImage()" 
+          class="absolute top-1/2 left-3 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition">
+    <i class="fas fa-chevron-left"></i>
+  </button>
+
+  <!-- Bouton suivant -->
+  <button onclick="nextImage()" 
+          class="absolute top-1/2 right-3 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-800 rounded-full p-2 shadow-md transition">
+    <i class="fas fa-chevron-right"></i>
+  </button>
+</div>
+
+<!-- Miniatures -->
+<div class="flex grid-cols-4 gap-5 flex flex-wrap justify-center">
+  <img src="img/img1.png" 
+       alt="صورة 1" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img10.png" 
+       alt="صورة 2" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img3.png" 
+       alt="صورة 3" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img4.jpg" 
+       alt="صورة 4" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img5.jpg" 
+       alt="صورة 4" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img6.png" 
+       alt="صورة 4" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+  <img src="img/img7.png" 
+       alt="صورة 4" class="thumbnail h-15 object-cover rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-500">
+</div>
+        </div>
+
+        <!-- Order Form -->
+        <div id="order-form-section" class="bg-white rounded-lg shadow-md p-6 mb-8 slide-up" style="animation-delay: 0.3s">
+            <h2 class="text-2xl font-bold text-rose-700 mb-6">استمارة الطلب</h2>
+            
+            <form id="order-form">
+                <!-- Customer Info -->
+                <div class="mb-4">
+                    <label for="fullname" class="block text-gray-700 font-medium mb-2">الاسم الكامل<span class="text-red-500">*</span></label>
+                    <input type="text" id="fullname" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300">
+                    <div id="fullname-error" class="error-message hidden">يرجى إدخال الاسم الكامل:</div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="phone" class="block text-gray-700 font-medium mb-2">رقم الهاتف <span class="text-red-500">*</span></label>
+                    <input type="text" id="phone" required 
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300">
+                    <div id="phone-error" class="error-message hidden">يرجى إدخال رقم هاتف صحيح</div>
+                </div>
+                
+                <!-- Product Options -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">اللون <span class="text-red-500">*</span></label>
+                    <div class="flex flex-wrap gap-3">
+                        <label class="custom-radio flex items-center">
+                            <input type="radio" name="color" value="أسود" checked class="hidden">
+                            <span class="w-8 h-8 rounded-full bg-black border-2 border-white shadow-md mr-2 transition-all duration-300"></span>
+                            <span>أسود</span>
+                        </label>
+                        <label class="custom-radio flex items-center">
+                            <input type="radio" name="color" value="أبيض" class="hidden">
+                            <span class="w-8 h-8 rounded-full bg-white border-2 border-gray-200 shadow-md mr-2 transition-all duration-300"></span>
+                            <span>أبيض</span>
+                        </label>
+                        
+                    </div>
+                    <div id="color-error" class="error-message hidden">يرجى اختيار اللون</div>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="quantity" class="block text-gray-700 font-medium mb-2">الكمية <span class="text-red-500">*</span></label>
+                        <select id="quantity" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition-all">
+                            <option value="1"> 1 حبة واحدة ب 2900دج</option>
+                            <option value="2"> 2  زوج حبات ب 5000دج</option>
+                            <option value="3"> 3 ثلاثة حبات ب 7000دج</option>
+                        </select>
+                    </div>
+                    
+                   <!-- Sélection de taille -->
+<div class="mb-6">
+  <h3 class="text-lg font-semibold mb-3">اختر المقاس <span class="text-red-500">*</span></h3>
+  
+  <!-- Options de taille -->
+  <div class="flex flex-wrap gap-2">
+    <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-400 rounded-lg cursor-pointer bg-white"
+         onclick="selectSize('40', this)">40</div>
+    <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-400 rounded-lg cursor-pointer bg-white"
+         onclick="selectSize('41', this)">41</div>
+    <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-400 rounded-lg cursor-pointer bg-white"
+         onclick="selectSize('42', this)">42</div>
+    <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-400 rounded-lg cursor-pointer bg-white"
+         onclick="selectSize('43', this)">43</div>
+    <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-400 rounded-lg cursor-pointer bg-white"
+         onclick="selectSize('44', this)">44</div>
+  </div>
+
+  <!-- Champ caché pour stocker la valeur -->
+  <input type="hidden" id="size" name="size">
+  
+  <!-- Message d'erreur -->
+  <div id="size-error" class="error-message hidden text-red-500 mt-2">يرجى اختيار المقاس</div>
+</div>
+ <!-- Section pour les produits supplémentaires -->
+ <div id="additional-products" class="hidden mt-6 mb-6">
+    <h3 class="text-lg font-semibold mb-4">المنتجات الإضافية</h3>
+    <div id="product-list" class="space-y-4">
+        <!-- Les produits supplémentaires seront générés ici dynamiquement -->
+    </div>
+</div>
+
+                </div>
+                
+                <!-- Delivery Options -->
+                <div class="mb-6">
+                    <label class="block text-gray-700 font-medium mb-2">طريقة التوصيل <span class="text-red-500">*</span></label>
+                    <div class="grid grid-cols-2 gap-4">
+                        <label class="delivery-option">
+                            <input type="radio" name="delivery" value="office" checked class="hidden">
+                            <div class="border-2 border-gray-200 rounded-lg p-4 text-center cursor-pointer transition-all">
+                                <i class="fas fa-building text-2xl text-blue-600 mb-2"></i>
+                                <div>التوصيل إلى المكتب</div>
+                            </div>
+                        </label>
+                        <label class="delivery-option">
+                            <input type="radio" name="delivery" value="home" class="hidden">
+                            <div class="border-2 border-gray-200 rounded-lg p-4 text-center cursor-pointer transition-all">
+                                <i class="fas fa-home text-2xl text-green-600 mb-2"></i>
+                                <div>التوصيل إلى المنزل</div>
+                            </div>
+                        </label>
+                    </div>
+                    <div id="delivery-error" class="error-message hidden">يرجى اختيار طريقة التوصيل</div>
+                </div>
+                
+                <!-- Location -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <div>
+                        <label for="wilaya" class="block text-gray-700 font-medium mb-2">الولاية <span class="text-red-500">*</span></label>
+                        <select id="wilaya" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition-all">
+                            <option value="">اختر ولايتك</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <div id="wilaya-error" class="error-message hidden">يرجى اختيار الولاية</div>
+                    </div>
+                    
+                    <div id="commune-container" class="hidden">
+                        <label for="commune" class="block text-gray-700 font-medium mb-2">البلدية <span class="text-red-500">*</span></label>
+                        <select id="commune" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-300 transition-all">
+                            <option value="">اختر ولايتك</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                        <div id="commune-error" class="error-message hidden">يرجى اختيار البلدية</div>
+                    </div>
+                </div>
+                
+                <!-- Price Summary -->
+                <div class="bg-gray-100 rounded-lg p-4 mb-6 transition-all">
+                    <div class="flex justify-between mb-2">
+                        <span>سعر المنتج:</span>
+                        <span id="product-price" class="font-medium">2900 دج</span>
+                    </div>
+                    <div class="flex justify-between mb-2">
+                        <span>تكلفة التوصيل:</span>
+                        <span id="delivery-price" class="font-medium">0 دج</span>
+                    </div>
+                    <div class="flex justify-between border-t border-pink-200 pt-2">
+                        <span class="font-bold">المجموع:</span>
+                        <span id="total-price" class="font-bold text-lg text-rose-700">2900 دج</span>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <button type="button" id="submit-btn" class="w-full bg-black hover:bg-blue-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 bounce">
+                    تأكيد الطلب
+                </button>
+            </form>
+        </div>
+    </main>
+
+    <!-- Sticky Order Button -->
+    <div class="sticky-button bg-transparent p-4">
+       
+            <button id="sticky-submit" class=" bg-black hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition duration-200 pulse w-full">
+                 أطلب لآن - الدفع بعد الاستلام
+            </button>
+        </div>
+    </div>
+
+     <!-- Order Summary Modal -->
+    <div id="orderModal" class="summary-modal fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full max-h-[95vh] overflow-y-auto">
+            <div class="p-3">
+                <h3 class="text-xl font-bold text-rose-600 mb-6 text-center">تفاصيل الطلب</h3>
+                
+                <div class="space-y-4">
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">الاسم الكامل:</span>
+                        <span id="modalFullName" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">رقم الهاتف:</span>
+                        <span id="modalPhone" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">المنتج:</span>
+                        <span class="font-medium">حذاء ZARA</span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">اللون:</span>
+                        <span id="modalColor" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">المقاس:</span>
+                        <span id="modalSize" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">الكمية:</span>
+                        <span id="modalQuantity" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">طريقة التوصيل:</span>
+                        <span id="modalDeliveryMethod" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">الولاية:</span>
+                        <span id="modalWilaya" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2" id="modalCommuneRow">
+                        <span class="text-gray-600">البلدية:</span>
+                        <span id="modalCommune" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">تكلفة التوصيل:</span>
+                        <span id="modalDeliveryCost" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between border-b pb-2">
+                        <span class="text-gray-600">سعر المنتج:</span>
+                        <span id="modalProductPrice" class="font-medium"></span>
+                    </div>
+                    <div class="flex justify-between pt-4">
+                        <span class="text-gray-700 font-bold">المجموع:</span>
+                        <span id="modalTotalPrice" class="text-rose-600 font-bold text-lg"></span>
+                    </div>
+                </div>
+                
+                <div class="mt-8 flex flex-col sm:flex-row gap-4">
+                    <button id="confirmOrder" class="flex-1 bg-blue-900 hover:bg-blue-600 text-white font-bold py-3 px-4 rounded-lg shadow-md transition duration-300 bounce">
+                        تأكيد الطلب
+                    </button>
+                    <button id="editOrder" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-3 px-4 rounded-lg transition duration-300">
+                        تعديل
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+ 
+
+    <!-- How It Works -->
+<section class="py-16 bg-white rounded-lg shadow-md p-6 mb-8 slide-up">
+    <div class="container mx-auto px-4">
+      
+  
+      <div class="flex flex-col md:flex-row items-center mb-12">
+        <div class="md:w-1/2 mb-8 md:mb-0">
+          <img src="img/img14.png" alt="كيف تُبرز أناقتك" class="rounded-lg shadow-lg w-full">
+        </div>
+  
+        <div class="md:w-1/2 md:pr-8">
+          <div class="mb-6">
+            <div class="flex items-center mb-2">
+              <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">1</div>
+              <h3 class="font-bold text-lg">تصميم أنيق وعصري يناسب جميع الأذواق.</h3>
+            </div>
+            <p class="text-gray-600 mr-11">كل موديل لدينا مصمم بعناية ليمنحك مظهراً عصرياً وأنيقاً.</p>
+          </div>
+  
+          <div class="mb-6">
+            <div class="flex items-center mb-2">
+              <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">2</div>
+              <h3 class="font-bold text-lg">وسادة داخلية ناعمة تمنحك راحة إضافية.</h3>
+            </div>
+            <p class="text-gray-600 mr-11">نستخدم سكاي ناعم ونعل مريح لضمان تجربة مميزة تدوم طويلاً.</p>
+          </div>
+  
+          <div class="mb-6">
+            <div class="flex items-center mb-2">
+              <div class="bg-primary text-white rounded-full w-8 h-8 flex items-center justify-center mr-3">3</div>
+              <h3 class="font-bold text-lg">مقاوم للماء للحماية أثناء الأيام الماطرة.</h3>
+            </div>
+            <p class="text-gray-600 mr-11">لا تقلق من المطر أو البقع الخفيفة فهو مقاوم للماء للحماية من الظروف اليومية</p>
+          </div>
+        </div>
+      </div>
+  
+      <div class="bg-gradient-to-r from-rose-600 to-rose-400 text-white rounded-2xl p-6 shadow-xl">
+  <div class="flex flex-col md:flex-row items-center justify-between">
+    
+    <div class="md:w-3/4 mb-4 md:mb-0">
+      <h3 class="font-extrabold text-2xl mb-2">🔥تخفيضات كبيرة لفترة محدودة!</h3>
+      <p class="text-white/90 text-lg leading-relaxed">
+        خليك ديما ستايل بأحذيتنا العصرية   
+        جودة راقية، راحة ما تلقاهاش في بلاصة، وسعر خاص لفترة محدودة!
+      </p>
+    </div>
+
+    <div class="md:w-1/4 flex justify-center md:justify-end">
+      <button id="order-btn"
+        class="bg-white text-rose-600 font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition duration-300 text-lg shadow-md bounce">
+        اطلب الآن
+      </button>
+    </div>
+
+  </div>
+</div>
+    </div>
+  </section>
+
+    <section class="mt-8 grid grid-cols-2 gap-8 text-center py-10 shadow-lg bg-white rounded-lg">
+        <!-- Paiement à la livraison -->
+        <div class="flex flex-col items-center gap-2">
+          <img src="img/الدفع عند الاستلام.png" class="w-16" alt="">
+          <span class="font-medium">الدفع عند الاستلام</span>
+        </div>
+      
+        <!-- Disponible 100% -->
+        <div class="flex flex-col items-center gap-2">
+          <img src="img/سعر مناسب.jpg" class="w-16" alt="">
+          <span class="font-medium">سعر مناسب</span>
+        </div>
+      
+        <!-- Service client -->
+        <div class="flex flex-col items-center gap-2">
+          <img src="img/livraison.jpg" class="w-16" alt="">
+          <span class="font-medium">توصيل سريع في 24 ساعة</span>
+        </div>
+      
+        <!-- Garantie 30 jours -->
+        <div class="flex flex-col items-center gap-2">
+          <img src="img/Capture d’écran 2025-10-21 153521.jpg" class="w-16" alt="">
+          <span class="font-medium">ضمان استرجاع في 3 أيام</span>
+        </div>
+      </section>
+      
+
+
+      <!-- Testimonials -->
+<section class="py-16 bg-light">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-dark mb-12">آراء عملائنا</h2>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+  
+        <!-- Témoignage 1 -->
+        <div class="testimonial-card bg-white p-6 rounded-lg shadow-md">
+          <div class="flex items-center mb-4">
+            <img src="img/profile 3.jfif" alt="Customer" class="rounded-full mr-4 w-14 h-14 object-cover">
+            <div>
+              <h4 class="font-bold">جيهان من مسيلة</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"يعطيك الصحة راهي وصلاتو الأمانة ربي يحفظكم و يسهلكم أموركم"</p>
+        </div>
+  
+        <!-- Témoignage 2 -->
+        <div class="testimonial-card bg-white p-6 rounded-lg shadow-md">
+          <div class="flex items-center mb-4">
+            <img src="img/profile 2.jfif" alt="Customer" class="rounded-full mr-4 w-14 h-14 object-cover">
+            <div>
+              <h4 class="font-bold">سيفاكس من تيزي وزو</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt" style="transform: scaleX(-1);"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"باسكات هايلة تتمتع باللأناقة و اللأريحية"</p>
+        </div>
+  
+        <!-- Témoignage 3 -->
+        <div class="testimonial-card bg-white p-6 rounded-lg shadow-md">
+          <div class="flex items-center mb-4">
+            <img src="img/profile 3.jfif" alt="Customer" class="rounded-full mr-4 w-14 h-14 object-cover">
+            <div>
+              <h4 class="font-bold">يوغورطة من تيزي وزو</h4>
+              <div class="flex text-yellow-400">
+                <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+              </div>
+            </div>
+          </div>
+          <p class="text-gray-600">"شكرا على حسن المعاملة و المصداقية."</p>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+
+
+
+
+   <!-- FAQ -->
+<section class="py-16 bg-white">
+    <div class="container mx-auto px-4">
+      <h2 class="text-3xl font-bold text-center text-dark mb-12">
+        أسئلة <span class="text-primary">شائعة</span>
+      </h2>
+  
+      <div class="max-w-3xl mx-auto">
+  
+        <div class="mb-6 border-b border-gray-200 pb-4">
+          <button class="faq-question flex justify-between items-center w-full text-right focus:outline-none">
+            <span class="font-bold text-lg">هل هذه الأحذية متينة ومناسبة للاستخدام اليومي؟</span>
+            <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer mt-2 text-gray-600 hidden">
+            <p>نعم، الأحذية المصممة لتكون متينة والملاءمة للاستخدام اليومي المكثف بشكل أساسي .</p>
+          </div>
+        </div>
+  
+        <div class="mb-6 border-b border-gray-200 pb-4">
+          <button class="faq-question flex justify-between items-center w-full text-right focus:outline-none">
+            <span class="font-bold text-lg">هل المقاسات دقيقة؟</span>
+            <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer mt-2 text-gray-600 hidden">
+            <p>نعم، المقاسات مطابقة للمقاسات الأوروبية القياسية. يُفضل اختيار مقاسك المعتاد.</p>
+          </div>
+        </div>
+  
+        <div class="mb-6 border-b border-gray-200 pb-4">
+          <button class="faq-question flex justify-between items-center w-full text-right focus:outline-none">
+            <span class="font-bold text-lg">كم تستغرق مدة التوصيل؟</span>
+            <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer mt-2 text-gray-600 hidden">
+            <p>يتم التوصيل خلال 24 إلى 48 ساعة الى ولايات شمال الجزائر ، ومن 2 إلى 3 أيام لباقي ولايات الجنوب.</p>
+          </div>
+        </div>
+  
+        <div class="mb-6 border-b border-gray-200 pb-4">
+          <button class="faq-question flex justify-between items-center w-full text-right focus:outline-none">
+            <span class="font-bold text-lg">هل أستطيع استبدال المنتج؟</span>
+            <i class="fas fa-chevron-down text-primary transition-transform duration-300"></i>
+          </button>
+          <div class="faq-answer mt-2 text-gray-600 hidden">
+            <p>نعم، يمكنك استبدال المقاس أو اللون خلال 3 أيام من الاستلام بشرط بقاء المنتج بحالته الأصلية.</p>
+          </div>
+        </div>
+  
+      </div>
+    </div>
+  </section>
+
+    <section class="bg-gray-50 py-10 text-center rounded-lg shadow">
+        <div class="flex justify-center mb-4">
+          <div class="w-14 h-14 bg-white shadow rounded-full flex items-center justify-center">
+            <!-- Icône casque -->
+           <img src="img/لديك أسئلة أخرى؟.png" alt="">
+          </div>
+        </div>
+      
+        <h2 class="text-2xl font-bold mb-2">لديك أسئلة أخرى؟</h2>
+        <p class="text-gray-600 mb-6">
+          إذا مازلت تريد معلومات إضافية، يمكنك دائمًا الاتصال بنا.
+        </p>
+      
+        <a href="https://wa.me/213792690640"
+           class="inline-flex items-center gap-3 bg-black text-white px-6 py-3 rounded-lg text-lg hover:bg-gray-800">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp" class="w-6 h-6">
+          تواصل معنا
+        </a>
+      </section>
+
+
+
+     <!-- Product Gallery -->
+<section class="py-12 bg-light">
+    <div class="container mx-auto px-4">
+      <h2 class="text-2xl md:text-3xl font-bold text-center text-dark mb-10">
+        اكتشف <span class="text-primary">أحدث موديلاتنا</span>
+      </h2>
+  
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+  
+        
+  
+        <!-- GRID Produits -->
+<div class="grid grid-cols-2 gap-4 px-2">
+
+    <!-- === PRODUCT CARD 1 === -->
+    <a href="https://keyro-steps-zara-soes.netlify.app/"
+       class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+
+        <div class="relative bg-gray-100 p-2 flex items-center justify-center h-32">
+            <span class="absolute top-2 left-2 bg-red-600 text-white text-[10px] font-bold px-2 py-1 rounded">
+                %20 تخفيض
+            </span>
+            <img src="img/autre produit.jpg" class="w-full h-full object-contain">
+        </div>
+
+        <div class="p-2">
+            <h3 class="font-bold text-sm text-gray-900 mb-1 text-right">حذاء ZARA رجالي</h3>
+
+            <p class="text-gray-500 text-[11px] mb-2 text-right">
+                مظهر أنيق وراحة يومية عالية.
+            </p>
+
+            <div class="flex justify-between items-center">
+                <span class="text-blue-600 font-bold text-sm">2900 د.ج</span>
+                <span class="line-through text-gray-400 text-[11px]">3500 د.ج</span>
+            </div>
+        </div>
+    </a>
+
+    <!-- === PRODUCT CARD 2 === -->
+    <a href="https://keyro-steps-zara-soes.netlify.app/"
+       class="block bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-all duration-300">
+
+        <div class="relative bg-gray-100 p-2 flex items-center justify-center h-32">
+            <span class="absolute top-2 left-2 bg-emerald-600 text-white text-[10px] font-bold px-2 py-1 rounded">
+                جديد
+            </span>
+            <img src="img/autre produit 2.jpg" class="w-full h-full object-contain">
+        </div>
+
+        <div class="p-2">
+            <h3 class="font-bold text-sm text-gray-900 mb-1 text-right">حذاء كلاسيكي</h3>
+
+            <p class="text-gray-500 text-[11px] mb-2 text-right">
+                تصميم فاخر مناسب للمناسبات والعمل.
+            </p>
+
+            <div class="flex justify-between items-center">
+                <span class="text-blue-600 font-bold text-sm">2900 د.ج</span>
+                <span class="line-through text-gray-400 text-[11px]">3500 د.ج</span>
+            </div>
+        </div>
+    </a>
+
+    <!-- === Ajoute AUTANT de produits que tu veux ici === -->
+</div>
+
+
+
+  
+       
+  
+      </div>
+    </div>
+  </section>
+
+      
+
+
+    
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">متجر الأحذية الجزائري</h3>
+                    <p class="text-gray-400">نقدم لكم أفضل تشكيلة من الأحذية بجودة عالية وأسعار مناسبة</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">روابط سريعة</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#" class="text-gray-400 hover:text-white">الصفحة الرئيسية</a></li>
+                        <li><a href="https://keyro-steps.netlify.app/" class="text-gray-400 hover:text-white">منتجاتنا</a></li>
+                        <li><a href="https://keyro-steps.netlify.app/" class="text-gray-400 hover:text-white">عروض خاصة</a></li>
+                        <li><a href="https://wa.me/213792690640" class="text-gray-400 hover:text-white">اتصل بنا</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold mb-4">تواصل معنا</h3>
+                    <div class="flex space-x-4 space-x-reverse">
+                        <a href="https://www.facebook.com/profile.php?id=61581455780274" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-facebook"></i></a>
+                        <a href="https://www.instagram.com/kayrosteps?igsh=MW1wYWx2a253N283ag==" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-instagram"></i></a>
+                        <a href="https://wa.me/213792690640#" class="text-gray-400 hover:text-white text-xl"><i class="fab fa-whatsapp"></i></a>
+                    </div>
+                    <p class="text-gray-400 mt-4">البريد الإلكتروني: kayrosteps@gmail.com</p>
+                    <p class="text-gray-400">الهاتف: 0792690640</p>
+                </div>
+            </div>
+            <div class="border-t border-gray-700 mt-8 pt-6 text-center text-gray-400">
+                <p>© 2025 متجر الأحذية الجزائري. جميع الحقوق محفوظة.</p>
+            </div>
+        </div>
+    </footer>
+    
+
+    <script>
+        // Algerian wilayas and communes data
+        const algerianWilayas = [
+            { id: 0, name: "اختر ولايتك", communes: ["إختر بلديتك"]},
+            { id: 1, name: "أدرار", communes: ["أدرار", "تامست", " شروين", "رقان", " إن زغمير", "تيت", " قصر قدور", " تسابيت", "تيميمون", " أولاد السعيد", "زاوية كنتة","أولف", "تيمقتن ", "تامنطيت", "فنوغيل", " تنركوك", "دلدول", " سالي", "أقبلي", "المطارفة", " أولاد أحمد تيمي", "بودة", "أوقروت", "طالمين", " برج باجي مختار", "السبع", "أولاد عيسى", " تيمياوين"] },
+            { id: 2, name: "الشلف", communes: ["الشلف", "تنس", "بنايرية", "الكريمية", "تاجنة", "تاوقريت", "بني حواء", "صبحة", "حرشون", "أولاد فارس", "سيدي عكاشة", "بوقادير", "بني راشد", "تلعصة", "الهرانفة", "وادى قوسين", "الظهرة", "أولاد عباس", "سنجاس", "الزبوجة", "وادي سلي", "أبو الحسن", "المرسى", "الشطية", "سيدي عبد الرحمان", "مصدق", "الحجاج", "الأبيض مجاجة", "وادي الفضة", "أولاد بن عبد القادر", "بوزغاية", "عين مران", "أم الذروع", "بريرة", "بني بوعتاب"] },
+            { id: 3, name: "الأغواط", communes: ["الأغواط", "قصر الحيران", "بن ناصر بن شهرة", "سيدي مخلوف", "حاسي الدلاعة", "حاسي الرمل", "عين ماضي", "تاجموت", "الخنق", "قلتة سيدي سعد", "عين سيدي علي", "البيضاء", "بريدة", "الغيشة", "الحاج المشري", "سبقاق", "تاويالة", "تاجرونة", "أفلو", "العسافية", "وادي مرة", "وادي مزي", "الحويطة", "سيدي بوزيد"] },
+            { id: 4, name: "أم البواقي", communes: ["أم البواقي", "عين البيضاء", "عين مليلة", "بحير شرقي", "العامرية", "سيقوس", "البلالة", "عين بابوش", "بريش", "أولاد حملة", "الضلعة", "عين كرشة", "هنشير تومغني", "الجازية", "عين الديس", "فكرينة", "سوق نعمان", "الزرق", "الفجوج بوغرارة سعودي", "أولاد زواي", "بئر الشهداء", "قصر الصبيحي", "وادي نيني", "مسكيانة", "عين فكرون", "الراحية", "عين الزيتون", "أولاد قاسم","الحرميلية"] },
+            { id: 5, name: "باتنة", communes: ["باتنة", "غسيرة ", " معافة", "مروانة", "سريانة", " منعة"," المعذر"," تازولت ","نقاوس"," القيقبة"," إينوغيسن","عيون العصافير"," جرمة"," بيطام","عزيل عبد القادر","آريس","كيمل "," تيلاطو","عين جاسر","أولاد سلام ","تيغرغار","عين ياقوت","سفيان"," فسديس"," الرحبات"," تيغانمين"," لمسان","قصر بلزمة","سقانة","إشمول","فم الطوب"," بني فضالة الحقانية","وادي الماء"," تالخمت","بوزينة"," الشمرة"," وادي الشعبة","تاكسلانت","القصبات","أولاد عوف"," بومقر"," بريكة"," الجزار","تكوت ","عين التوتة","حيدوسة","ثنية العابد","وادي الطاقة","أولاد فاضل","تيمقاد", "رأس العيون"," شير","أولاد سي سليمان"," زانة البيضاء","أمدوكال","أولاد عمار"," الحاسي","لازرو","بومية","بولهيلات","لارباع"] },
+            { id: 6, name: "بجاية", communes: ["بجاية","آدكار", "آغرام", "آيت أرزين", "آيت سماعيل", "أقبو", "أكفادو", "أمالو", "أميزور", "أوزلاقن", "أوقاس", "إغيل علي", "القصر", "برباشة", "بني جليل", "بني كسيلة", "بني معوش", "بني مليكش", "بوجليل", "بوحمزة", "بوخليفة", "تازمالت", "تاسكريوت", "تالة حمزة", "تامريجت", "تاوريرت آغيل", "تمقرة", "توجة", "تيزي أنبربار", "تيشي", "تيفرة", "تيمزريت", "تينبذار", "خراطة", "درقينة", "ذراع القايد", "سمعون", "سوق أوفلة", "سوق الاثنين", "سيدي عياد", "سيدي عيش", "شلاطة", "شميني", "صدوق", "طيبان", "فرعون", "فناية الماثن", "قلعة بني عباس", "كنديرة", "لفلاي", "مسيسنة", "ملبو", "وادي غير"] },
+            { id: 7, name: "بسكرة", communes: ["بسكرة", "أوماش","البرانيس","الحاجب","الحوش","الغلوس","الفيض","القنطرة","المزيرعة","برج بن عزوز","بوشقرون","جمورة","خنقة سيدي ناجي", "اورلال","زريبة الوادي","سيدي عقبة","شتمة","طولقة","عين الناقة","عين زعطوط","فوغالة","لوطاية","ليشانة","ليو","مخادمة","مشونش","مليلي"] },
+            { id: 8, name: "بشار", communes: ["بشار", "القنادسة","المريجة","بني ونيف","لحمر","موغل","بوكايس","تاغيت","العبادلة","عرق فراج","مشرع هواري بومدين","بني عباس","تامترت","إقلي","الواتة","كرزاز","بني يخلف","تيمودي","أولاد خضير","قصابي","تبلبالة"] },
+            { id: 9, name: "البليدة", communes: ["البليدة","الشبلي","بوينان","وادي العلايق","أولاد يعيش","الشريعة","العفرون","الشفة","حمام ملوان","بن خليل","الصومعة","موزاية","صوحان","مفتاح","أولاد سلامة", "بوفاريك","الأربعاء","وادي جر","بني تامو","بوعرفة", "بني مراد","بوقرة","قرواو","عين الرمانة","جبابرة"] },
+            { id: 10, name: "البويرة", communes: ["البويرة","عين بسام","عين العلوي","عين الحجر","بشلول","الأصنام","العجيبية","أهل القصر","أولاد راشد","بئر غبالو","الروراوة","الخبوزية","برج أوخريص","مسدور","تاقديت","الحجرة الزرقاء","عين الترك","آيت لعزيز","الهاشمية","وادي البردي","حيزر","تاغزوت","قادرية","عمر","الجباحية", "الأخضرية","بوكرام","معالة","بودربالة","الزبربر","قرومة","مشدا الله","الصھاريج","الشرفة","الحانيف","أغبالو","آث منصور","سوق الخميس","المقراني", "سور الغزلان","المعمورة","ريدان","الحاكمية","الدشمية","ديرة"] },
+            { id: 11, name: "تمنراست", communes: ["تمنراست","عين أمقل"," إدلس","عين صالح","فقارة الزوى", "عين قزام", "إينغر", "تاظروك", "أبلسة"," تين زواتين"] },
+            { id: 12, name: "تبسة", communes: ["تبسة","بئر العاتر","الشريعة","الونزة","الحمامات","الكويف","بوخضرة","مرسط","العقلة","الماء الأبيض","بكارية","نقرين","بئر مقدم"," المريج","أم علي","العوينات","بولحاف الدير","ثليجان","بئر الذهب","سطح قنطيس","صفصاف الوسرة","الحويجبات","المزرعة","بجن","فركان","قريقر","العقلة المالحة","عين الزرقاء",]},
+            { id: 13, name: "تلمسان", communes: ["تلمسان", "المنصورة","تيرني بني ھديل", "عين غرابة","بني مستار","شتوان","عين فزة","عمير","أولاد ميمون","الواد الأخضر","بني صميل","عين تالوت","عين نحالة","بن سكران","سيدي العبدلي","الرمشي","بني ورسوس","عين يوسف","السبعة شيوخ","الفحول","الحناية","زناتة","أولاد رياح","الغزوات","السواحلية","تيانت","دار يغمراسن","ندرومة","جبالة","فلاوسن","عين فتاح", "عين الكبيرة","مغنية","حمام بوغرارة","بني بوسعيد","سيدي مجاهد", "صبرة","بوحلو","سبدو","القور","العريشة", "سيدي الجيلالي", "البويهي","بني سنوس","العزايل","بني بهدل","باب العسة","السواني","سوق الثلاثاء","مرسى بن مهيدي", "مسيردة الفواقة", "هنين","بني خلاد" ] },
+            { id: 14, name: "تيارت", communes: ["تيارت","بوقرة ","تاخمرت","تاقدمت","توسنينة","تيدة","جبيلة الرصفاء","جيلالي بن عمار","حمادية","دحموني","الرحوية","الرشايقة","زمالة الأمير عبد القادر","السبت","سبعين","سرغين","السوقر","سي عبد الغني","سيدي بختي","سيدي حسني","سيدي عبد الرحمان","سيدي علي ملال","شحيمة","عين الحديد","عين الذهب","عين بوشقيف","عين دزاريت","عين كرمس","الفايجة","فرندة","قرطوفة", "قصر الشلالة","مادنة", "مدروسة","مدريسة","مشرع الصفاء", "مغيلة","ملاكو","مهدية","الناظورة","النعيمة","وادي ليلي"] },
+            { id: 15, name: "تيزي وزو", communes: ["تيزي وزو","واسيف","أيت بومهدي","أيت تودرت","عين الحمام","أيت يحي","أقبيل","أبي يوسف","عزازقة","فريحة","زكري","إعكوران","إيفيغاء","بوغني","مشطراس","بونوح","أسي يوسف","ذراع الميزان","فريقات","عين الزاوية","أيت يحي موسى","واقنون","تيميزارت","آيت عيسى ميمون","الأربعاء نايث إيراثن","أيت قواشة","إرجن","أزفون","أقرو","أيت شفعة","أغريب","ذراع بن خدة","تادمايت","سيدي نعمان","تيرمتين","تيقزيرت","إفليسن","مزرانة", "بوزقن","إجر","إيلولة أمالو","بني زيكي","بني دوالة","أيت محمود","بني عيسي","بني زمنزر","واضية","أقني قغران","تيزي نثلاثة","أيت بوعدو", "معاتقة","سوق الاثنين","مقلع","أيت خليلي","الصوامع","بني يني","يطافن","إبودرارن","تيزي راشد","أيت أومالو","إيفرحونن","أمسوحال","إليلتن","تيزي غنيف","مكيرة","ماكودة","بوجيمة" ] },
+            { id: 16, name: "الجزائر", communes: ["الجزائر", "بوزريعة", "باب الواد", "برج البحري", "أولاد شبل", "أولاد فايت", "الأبيار", "الجزائر الوسطى", "الحامة - العناصر", "الحراش", "الحمامات", "الدار البيضاء", "الرايس حميدو", "الرحمانية", "الرغاية", "الرويبة", "السحاولة", "السويدانية", "الشراقة", "العاشور", "القبة", "القصبة", "الكاليتوس", "المحالمة", "المحمدية", "المدنية", "المرادية", "المرسى", "المقارية", "بئر توتة", "بئر خادم", "بئر مراد رايس", "باب الزوار", "بابا حسن", "باش جراح", "براقي", "برج الكيفان", "بن عكنون", "بني مسوس", "بوروبة", "بولوغين", "جسر قسنطينة", "حسين داي", "حيدرة", "خرايسية", "دالي إبراهيم", "دويرة", "زرالدة", "سطاوالي", "سيدي موسى", "عين البنيان", "عين طاية", "هراوة", "واد قريش", "وادي السمار", "تسالة المرجة", "قصبة الجزائر"] },
+            { id: 17, name: "الجلفة", communes: ["الجلفة", "أم الشقاق", "أم العظام", "الإدريسية", "الخميس", "القديد", "بن يعقوب", "بنھار", "بويرة الأحداب", "بيرين", "تعظميت", "حاسي العش", "حاسي بحبح", "حاسي فدول", "حد الصحاري", "دار الشيوخ", "دلدول", "دويس", "زعفران", "زكار", "سد الرحال", "سد رحال", "سلمانة", "سيدي بايزيد", "سيدي لعجال", "الشارف", "عمورة", "عين الابل", "عين الشهداء", "عين فقه", "عين معبد", "عين وسارة", "فرزول", "فيض البطمة", "قرنيني", "قطارة", "مجبارة", "مسعد", "مليليحة"] },
+            { id: 18, name: "جيجل", communes: ["جيجل", "أولاد رابح", "أولاد يحيى خدروش", "إيراقن", "الجمعة بني حبيبي", "السطارة", "الشحنة", "الشقفة", "العنصر", "العوانة", "الميلية", "برج الطهر", "بلدية الأمير عبد القادر", "بودريعة بن ياجيس", "بوراوي بلهادف", "بوسيف أولاد عسكر", "تاكسنة", "جيملة", "خيري وادي العجول", " العنصر", " الميلية", "زيامة منصورية", "سلمى بن زيادة", "سيدي عبد العزيز", "سيدي معروف", "الطاهير", "غبالة", "قاوس", "القنار", "وجانة"] },
+            { id: 19, name: "سطيف", communes: ["سطيف", "العلمة", "بازر الصخرة", "القلتة الزرقاء", "عين آزال", "عين الحجر", "بئر حدادة", "بيضاء برج", "عين ولمان", "قصر الأبطال", "قلال", "أولاد سي أحمد", "عين أرنات", "مزلوق", "عين عباسة", "الأوريسية", "عين الكبيرة", "دهامشة", "أولاد عدوان", "عموشة", "واد البارد", "تيزي نبشار", "بابور", "سرج الغول", "بني عزيز", "عين السبت", "معاوية", "بني ورتيلان", "بني شبانة", "بني محلي", "عين لقراج", "بئر العرش", "بلاعة", "الولجة", "تاشودة", "بوعنداس", "آيت نوال مزادة", "آيت تيزي", "بوسلام", "بوقاعة", "عين الروى", "بني حسين", "جميلة", "بني فودة", "قنزات", "حربيل", "قجال", "أولاد صابر", "حمام قرقور", "ذراع قبيلة", "حمام السخنة", "الطاية", "التلة", "ماوكلان", "تالة ايفاسن", "صالح باي", "بوطالب", "الحامة", "أولاد تبان", "الرصفة"] },
+            { id: 20, name: "سعيدة", communes: ["سعيدة", "أولاد براهيم","أولاد خالد","الحساسنة","تيرسين","ذوي ثابت","سيدي أحمد","سيدي عمر","سيدي بوبكر","عين الحجر","العين السخونة","عين سلطان","معمورة","مولاي لعربي","هونة", "يوب"] },
+            { id: 21, name: "سكيكدة", communes: ["سكيكدة", "أم الطوب","أمجاز الدشيش","أولاد أحبابة","أولاد عطية", "الحدائق","السبت","الشرايع","الكركرة","المرسى","الولجة بوالبلوط","بكوش لخضر", "بن عزوز","بني بشير","بني زيد","بني ولبان","بودوخة","بوشطاطة","بين الويدان","تمالوس","جندل ","الحروش","حمادي كرومة","خناق مايون","رمضان جمال","زردازة","زيتونة","سيدي مزغيش","صالح بوالشعور","عزابة","عين بوزيان","عين زويت","عين شرشار","عين قشرة","فلفلة", "القل","قنواع","لغدير","وادي الزهور"] },
+            { id: 22, name: "سيدي بلعباس", communes: ["سيدي بلعباس", "الحصيبة", "الضاية", "العمارنة", "المسيد", "بئر الحمام", "بدر الدين المقراني", "بلعربي", "بن باديس", "بن عشيبة شلية", "بوجبهة البرج", "بوخنيفيس", "تاودموت", "تسالة", "تغاليمت", "تفسور", "تلاغ", "تلموني", "تنيرة", "حاسي دحو", "حاسي زهانة", "راس الماء", "رجم دموش", "زروالة", "سفيزف", "سهالة ثاورة", "سيدي إبراهيم", "سيدي حمادوش", "سيدي خالد", "سيدي دحو الزائر", "سيدي شعيب", "سيدي علي بن يوب", "سيدي علي بوسيدي", "سيدي لحسن", "سيدي يعقوب", "شيطوان بليلة", "طابية", "عين أدان", "عين البرد", "عين الثريد", "عين تندامين", "عين قادة", "لمطار", "مرحوم", "مرين", "مزاورو", "مصطفى بن إبراهيم", "مقدرة", "مولاي سليسن", "واد السبع", "واد تاوريرة", "واد سفيون"] },
+            { id: 23, name: "عنابة", communes: ["عنابة", "برحال", "الحجار","العلمة","البوني","وادي العنب","الشرفة", "سرايدي","عين الباردة","شطايبي","سيدي عمار","تريعات"] },
+            { id: 24, name: "قالمة", communes: ["قالمة","الدهوارة","الركنية","الفجوج","برج صباط","بلخير","بن جراح","بني مزلين","بوحشانة","بوحمدان","بوشقوف","بوعاطي محمود","بومهرة أحمد","تاملوكة","جبالة لخميسي","حمام المسخوطين","حمام النبايل","حمام بلحشاني", "حمام دباغ","راس العقبة","سلاوة عنونة","عين العربي","عين بن بيضاء","عين رقادة","عين صندل", "عين مخلوف", "قلعة بوصبع","لخزارة","مجاز الصفاء","مجاز عمار","نشماية","هواري بومدين","هيليوبوليس", "وادي الزناتي","وادي الشحم","وادي فراغة"] },
+            { id: 25, name: "قسنطينة", communes: ["قسنطينة", "الخروب","عين سمارة","أولاد رحمون", "عين عبيد","ابن باديس", "زيغود يوسف","بني حميدان","حامة بوزيان","ديدوش مراد", "ابن زياد","مسعود بوجريو"] },
+            { id: 26, name: "المدية", communes: ["المدية", "أم الجليل", "أولاد إبراهيم", "أولاد بوعشرة", "أولاد دايد", "أولاد عنتر", "أولاد امعرف", "أولاد هلال", "بئر بن عابد", "البرواقية", "بعطة", "بن شكاو", "بني سليمان", "بوسكن", "بوشراحيل", "بوعيش", "بوعيشون", "تابلاط", "تفراوت", "تمسقيدة", "تيزي المهدي", "ثلاثة الدوائر", "جواب", "الحمدانية", "حناشة", "خمس جوامع", "دراق", "ذراع السمار", "الربعية", "الزبيرية", "السانق", "سدراية", "سغوان", "السواقي", "سي المحجوب", "سيدي الربيع", "سيدي دامد", "سيدي زهار", "سيدي زيان", "سيدي نعمان", "شلالة العذاورة", "شنيقل", "الشهبونية", "عزيز", "العزيزية", "العمارية", "العوينات", "العيساوية", "عين القصير", "عين بوسيف", "فج الحوضين", "قصر البخاري", "القلب الكبير", "الكاف الأخضر", "مجبر", "مزغنة", "مغراوة", "مفاتحة", "ميهوب", "وادي حربيل", "عوامري", "وزرة"] },
+            { id: 27, name: "مستغانم", communes: ["مستغانم","حاسي مميش","مزغران", "ستيدية","عين نويسي","الحسيان","فورناكة","سيدي بلطار","واد الخير", "سيدي علي","أولاد معلة","تازغيت","نكمارية", "خير الدين","عين بودنار","الصفصاف","عين تادلس","صور","بوقرات","صيرات","السوافلية","مسرى","عين سيدي الشريف","المنصورة","الطواهرية","الصيادة","عشعاشة","خضراء","أولاد بوغالم","سيدي الأخضر", "حجاج","عبد المالك رمضان"] },
+            { id: 28, name: "المسيلة", communes: ["المسيلة", "مقرة", "برهوم", "بلعايبة", "عين الخضراء", "الدهاهنة", "أولاد دراج", "معاضيد", "صوامع", "أولاد عدي لقبالة", "مطارفة", "حمام ضلعة", "تارمونت", "أولاد منصور", "ونوغة", "عين الحجل", "سيدي هجرس", "سيدي عيسى", "بوطي سايح", "بني يلمان", "شلال", "خطوطي سد الجير", "أولاد ماضي", "المعاريف", "خبانة", "الحومد", "مسيف", "مجدل", "مناعة ( أولاد عطية)", "بوسعادة", "هامل", "ولتام", "أولاد سيدي إبراهيم (ديس)", "بن زوه", "سيدي عامر", "تامسة", "بن سرور", "محمد بوضياف (واد شعير)", "زرزور", "أولاد سليمان", "عين الملح", "بئر فضة", "عين فارس", "سيدي امحمد", "عين الريش", "جبل مسعد ( عين غورب)", "سليم"] },
+            { id: 29, name: "معسكر", communes: ["معسكر", "البرج", "البنيان", "السحايلية", "الشرفة", "الصحاورية", "العلايمية", "الغمري", "القعدة", "القيطنة", "المامونية", "المحمدية", "المنور", "الهاشم", "بوحنيفية", "بوهني", "تيزي", "تيغنيف", "حسين", "خلوية", "دوار الملح", "رأس عين عميروش", "زلامطة", "زهانة", "سجرارة", "سيدي بوسعيد", "سيدي عبد الجبار", "سيدي عبد المؤمن", "سيدي قادة", "عقاز", "عوف", "عين افرص", "عين فارس", "عين فراح", "عين فكان", "غروس", "غريس", "فراقيق", "فروحة", "قرجوم", "القرط", "ماقضة", "ماوسة", "مطمور", "مقطع دوز", "نسموط", "وادي الأبطال", "وادي تاغية"] },
+            { id: 30, name: "ورقلة", communes: ["ورقلة", "الرويسات", "حاسي مسعود","تقرت","تبسبست","النزلة","الزاوية العابدية","تماسين","بلدة عمر","المقارين","أنقوسة"," سيدي خويلد", "عين البيضاء","حاسي بن عبد الله","البرمة","سيدي سليمان","الحجيرة"," العالية","الطيبات"," بن ناصر","المنقر", "النقوسة"] },
+            { id: 31, name: "وهران", communes: ["وهران", "أرزيو","العلايمية","الكرمة","الكرمة","بئر الجير","البرية","بن فريحة", "بطيوة","بوتليليس","بوسفر","بوفاطيس","حاسي بن عقبة","حاسي بونيف","حاسي مفسوخ","دوار الملح","السانية","سيدي الشحمي","سيدي بن يبقى","سيق","طفراوي","العنصر","عين البية","عين الكرمة", "عين الترك","قديل","مرسى الحجاج","المرسى الكبير","مسرغين","وادي تليلات"] },
+            { id: 32, name: "البيض", communes: ["البيض","أربوات","الأبيض سيدي الشيخ","البنود","الخيثر","الرقاصة","الشلالة","المحرة","بوسمغون", "بريزينة","بوعلام","بوقطب","توسمولين","ستيتن","سيدي سليمان","سيدي طيفور","سيدي عمر","شقيق","عين العراك", "الغاسول","كاف لحمر","كراكدة"] },
+            { id: 33, name: "إليزي", communes: ["إليزي","أوهانت","إحرر", "إن أميناس","برج الحواس","برج تارات", "جانت", "برج عمر إدريس","دبداب"] },
+            { id: 34, name: "برج بوعريريج", communes: ["برج بوعريريج","أولاد أبراهم","أولاد دحمان","أولاد سيدي إبراهيم", "الحمادية","العش","العناصر","القلة","القليعة","الماين","المهير","بئر قصد علي","برج الغدير","برج زمورة","عين تسرة","بليمور","بن داود","تسامرت","تفرق","تقلعيت","تكستار","ثنية النصر","جعافرة","حرازة","حسناوة","خليل", "رأس الوادي","الرابطة","سيدي امبارك","عين تاغروت","غيلاسة","القصور","مجانة", "المنصورة","الياشير"] },
+            { id: 35, name: "بومرداس", communes: ["بومرداس","أولاد عيسى","أولاد موسى","أولاد هداج","اعفير","الأربعطاش","الثنية","الخروبة","الناصرية","برج منايل", "بغلية","بن شود","بني عمران", "بودواو","بوزرقزق قدارة","تاورقة","تجلابين","تيمزريت","جنات","حمادي", "دلس", "خميس الخشنة","زموري","سوق الحد","سي مصطفى","سيدي داود","شعبة العامر","عمال","قورصو","لقاطة","يسر"] },
+            { id: 36, name: "الطارف", communes: ["الطارف","بحيرة الطيور","بريحان","البسباس", "بن مهيدي", "بوثلجة", "بوحجار","حمام بني صالح","الذرعان","رمل السوق","زريزر","الزيتونة","السوارخ","الشافية","شبيطة مختار","الشط","الشيحاني","عصفور","عين العسل","عين الكرمة","العيون", "القالة","واد الزيتون"] },
+            { id: 37, name: "تندوف", communes: ["تندوف", "أم العسل"] },
+            { id: 38, name: "تيسمسيلت", communes: ["تيسمسيلت","أولاد بسام","الأربعاء","الأزهرية","العيون","المعاصم","الملعب","اليوسفية", "برج الأمير عبد القادر","برج بونعامة","بني شعيب","بني لحسن","بوقايد","تملاحت","ثنية الحد", "خميستي","سيدي العنتري","سيدي بوتشنت","سيدي سليمان","سيدي عابد","عماري", "لرجام", ] },
+            { id: 39, name: "الوادي", communes: ["الوادي","أميه ونسة", "البياضة","الحمادين","الحمراية","الدبيلة","الرباح","الرقيبة","الطريفاوي","العقلة","المرزاقة","المقرن","النخلة","الوادي","بن قشة","تغزوت","تندلة", "حاسي خليفة","حساني عبد الكريم","دوار الماء","سيدي عون","طالب العربي","عين الشوشة", "قمار","كوينين","وادي العلندة","ورماس","وغلانة"] },
+            { id: 40, name: "خنشلة", communes: ["خنشلة","عين الطويلة", "بابار","بغاي","بوحمامة", "ششار","شلية","جلال", "الحامة","المحمل","الولجة","انسيغة","قايس","خيران","لمصارة","متوسة","أولاد رشاش","الرميلة","طامزة","تاوزيانت", "يابوس"] },
+            { id: 41, name: "سوق أهراس", communes: ["سوق أهراس","أم العظائم","أولاد إدريس","أولاد مؤمن","الحنانشة","الراقوبة","الزوابي","بئر بوحوش","تاورة","ترقالت","تيفاش", "الحدادة","الخضارة","خميسة","الدريعة","الزعرورية","سافل الويدان","سدراتة", "سيدي فرج","عين زانة","عين سلطان","مداوروش","المراهنة","المشروحة","وادي الكبريت","ويلان", "المحمل",] },
+            { id: 42, name: "تيبازة", communes: ["تيبازة","أغبال","الأرهاط","الداموس","الشعيبة","الناظور","بني ميلك","بو إسماعيل","بورقيقة","بوهارون","حجرة النص","حجوط","حطاطبة","حمر العين","خميستي", "دواودة","سيدي اعمر ","سيدي راشد","سيدي سميان","سيدي غيلاس", "شرشال","عين تقورايت", "فوكة","القليعة", "قوراية","مراد","مسلمون","مناصر"] },
+            { id: 43, name: "ميلة", communes: ["ميلة","أحمد راشدي","أولاد خلوف","التلاغمة","الرواشد","العياضي برباس","القرارم قوقة","المشيرة","بن يحيى عبد الرحمان","بوحاتم","تاجنانت","تبرقنت","ترعي باينان","تسالة لمطاعي","تسدان حدادة","حمالة","دراحي بوصلاح","رجاص","زغاية","سيدي خليفة ","سيدي مروان", "شلغوم العيد","الشيقارة","عميرة أراس","عين البيضاء حريش","عين التين","عين الملوك", "فرجيوة","مينار زارزة","وادي العثمانية","وادي النجاء","وادي سقان","يحيى بن قشة"] },
+            { id: 44, name: "عين الدفلى", communes: ["عين الدفلى","الحسنية","الروينة","العبادية","الماين ","المخاطرية","بئر ولد خليفة","بربوش","برج الأمير خالد","بطحية","بلعاص","بن علال","بوراشد","بومدفع","تسيلي","تيبركانين","جليدة","جمعة ولاد الشيخ","جندل","حمام ريغة","خميس مليانة","زدين","سيدي الأخضر","طارق بن زياد","العامرة","عريب","العطاف","عين بنيان","عين بويحيى","عين تركي","عين سلطان","عين لشياخ", "مليانة","واد الشرفاء","وادي الجمعة"] },
+            { id: 45, name: "النعامة", communes: ["النعامة","البيوض","القصدير ", "مشرية","تيوت","جنين بورزق","صفيصيفة","عسلة", "عين الصفراء","عين بن خليل", "مغرار","مكمن بن عمار"] },
+            { id: 46, name: "عين تموشنت", communes: ["عين تموشنت","آغلال","الأمير عبد القادر","الحساسنة","العامرية","المالح ","امسعيد","اولاد الكيحل", "أولاد بوجمعة", "بني صاف","بوزجار","تارقة","تامزوغة","حاسي الغلة", "حمام بوحجر","رشقون","سيدي أورياش","سيدي الصافي","سيدي بن عدة","سيدي بومدين","شعبة اللحم","شنتوف","عقب الليل","عين الأربعاء","عين الطلبة","عين الكيحل","وادي الصباح","وادي برقش","ولهاصة"] },
+            { id: 47, name: "غرداية", communes: ["غرداية","العطف","بريان","بونورة","حاسي الفحل","حاسي القارة ","زلفانة","سبسب", "ضاية بن ضحوة","القرارة","متليلي","المنصورة", "المنيعة"] },
+            { id: 48, name: "غليزان", communes: ["غليزان", " أولاد سيدي الميهوب", "أولاد يعيش", "الحمادنة", "الرمكة", "القطار", "القلعة", "المرجة", "المطمر", "الولجة", "بلعسل", "بن داود", "بني درقن", "بني زنطيس", "جديوية", "الحاسي", "حد الشكالة", "حمري", "دار بن عبد الله", "زمورة", "سوق الحد", "سيدي امحمد بن علي", "سيدي خطاب", "سيدي سعادة", "سيدي لزرق", "سيدي محمد بن عودة", "عمي موسى", "عين الرحمة", "عين طارق", "لحلاف", "مازونة", "مديونة", "منداس", "واد الجمعة", "واد السلام", "وادي ارهيو", "واريزان", "يلل"] },
+            { id: 49, name: "تيميمون", communes: ["تيميمون", "أوقروت","أولاد السعيد","المطارفة","تينركوك","دلدول","شروين","طالمين","قصر قدور","أولاد عيسى"] },
+            { id: 50, name: "برج باجي مختار", communes: ["برج باجي مختار","تيمياوين"] },
+            { id: 51, name: "أولاد جلال", communes: ["أولاد جلال","سيدي خالد","رأس الميعاد","البسباس","الشعيبة","الدوسن"] },
+            { id: 52, name: "بني عباس", communes: ["بني عباس","تبلبالة","إقلي","الواتة","كرزاز","أولاد خضير"," تامترت","بني يخلف","تيمودي"," وقصابي"]},
+            { id: 53, name: "عين صالح", communes: ["عين صالح","إن غار"," فقارة الزاوية"]},
+            { id: 54, name: "عين قزام", communes: ["عين قزام"," تين زاوتين"]},
+            { id: 55, name: "تقرت", communes: ["تقرت","بن ناصر","بلدة عمر","العالية","الحجيرة","مقارين","المنقر","النزلة","سيدي سليمان","الطيبات","تماسين","تبسبست","الزاوية العابدية"]},
+            { id: 56, name: "جانت", communes: ["جانت"," برج الحواس"]},
+            { id: 57, name: "المغير", communes: ["المغير","أم الطيور","جامعة","سيدي عمران","اسطيل","سيدي خليل","تندلة","المرارة"]},
+            { id: 58, name: "المنيعة", communes: ["المنيعة","حاسي القارة","المنصورة","حاسي الفحل"]}
+        ];
+
+        // Delivery fees by commune (for home delivery)
+        const deliveryFees = {
+           "أدرار" : 1050,"تامست": 1050," شروين": 1050, "رقان": 1050, " إن زغمير": 1050, "تيت": 1050, " قصر قدور": 1050, " تسابيت": 1050, "تيميمون": 1050, " أولاد السعيد": 1050, "زاوية كنتة": 1050,"أولف": 1050, "تيمقتن ": 1050, "تامنطيت": 1050, "فنوغيل": 1050, " تنركوك": 1050, "دلدول": 1050, " سالي": 1050, "أقبلي": 1050, "المطارفة": 1050, " أولاد أحمد تيمي": 1050, "بودة": 1050, "أوقروت": 1050, "طالمين": 1050, " برج باجي مختار": 1050, "السبع": 1050, "أولاد عيسى": 1050, " تيمياوين": 1050,
+           "الشلف": 900, "تنس": 900, "بنايرية": 900, "الكريمية": 900, "تاجنة": 900, "تاوقريت": 900, "بني حواء": 900, "صبحة": 900, "حرشون": 900, "أولاد فارس": 900, "سيدي عكاشة": 900, "بوقادير": 900, "بني راشد": 900, "تلعصة": 900, "الهرانفة": 900, "وادى قوسين": 900, "الظهرة": 900, "أولاد عباس": 900, "سنجاس": 900, "الزبوجة": 900, "وادي سلي": 900, "أبو الحسن": 900, "المرسى": 900, "الشطية": 900, "سيدي عبد الرحمان": 900, "مصدق": 900, "الحجاج": 900, "الأبيض مجاجة": 900, "وادي الفضة": 900, "أولاد بن عبد القادر": 900, "بوزغاية": 900, "عين مران": 900, "أم الذروع": 900, "بريرة": 900, "بني بوعتاب": 900,
+           "الأغواط": 950, "قصر الحيران": 950, "بن ناصر بن شهرة": 950, "سيدي مخلوف": 950, "حاسي الدلاعة": 950, "حاسي الرمل": 950, "عين ماضي": 950, "تاجموت": 950, "الخنق": 950, "قلتة سيدي سعد": 950, "عين سيدي علي": 950, "البيضاء": 950, "بريدة": 950, "الغيشة": 950, "الحاج المشري": 950, "سبقاق": 950, "تاويالة": 950, "تاجرونة": 950, "أفلو": 950, "العسافية": 950, "وادي مرة": 950, "وادي مزي": 950, "الحويطة": 950, "سيدي بوزيد": 950,
+           "أم البواقي": 900, "عين البيضاء": 900, "عين مليلة": 900, "بحير شرقي": 900, "العامرية": 900, "سيقوس": 900, "البلالة": 900, "عين بابوش": 900, "بريش": 900, "أولاد حملة": 900, "الضلعة": 900, "عين كرشة": 900, "هنشير تومغني": 900, "الجازية": 900, "عين الديس": 900, "فكرينة": 900, "سوق نعمان": 900, "الزرق": 900, "الفجوج بوغرارة سعودي": 900, "أولاد زواي": 900, "بئر الشهداء": 900, "قصر الصبيحي": 900, "وادي نيني": 900, "مسكيانة": 900, "عين فكرون": 900, "الراحية": 900, "عين الزيتون": 900, "أولاد قاسم": 900,"الحرميلية": 900,
+           "باتنة": 900, "غسيرة ": 900, " معافة": 900, "مروانة": 900, "سريانة": 900, " منعة": 900," المعذر": 900," تازولت ": 900,"نقاوس": 900," القيقبة": 900," إينوغيسن": 900,"عيون العصافير": 900," جرمة": 900,"بيطام": 900,"عزيل عبد القادر": 900,"آريس": 900,"كيمل ": 900,"تيلاطو": 900,"عين جاسر": 900,"أولاد سلام": 900,"تيغرغار": 900,"عين ياقوت": 900,"سفيان": 900," فسديس": 900," الرحبات": 900," تيغانمين": 900," لمسان": 900,"قصر بلزمة": 900,"سقانة": 900,"إشمول": 900,"فم الطوب": 900,"بني فضالة الحقانية": 900,"وادي الماء": 900," تالخمت": 900,"بوزينة": 900," الشمرة": 900," وادي الشعبة": 700,"تاكسلانت": 900,"القصبات": 900,"أولاد عوف": 900," بومقر": 900," بريكة": 900," الجزار": 900,"تكوت ": 900,"عين التوتة": 900,"حيدوسة": 900,"ثنية العابد": 900,"وادي الطاقة": 900,"أولاد فاضل": 900,"تيمقاد": 900,"رأس العيون": 900," شير": 900,"أولاد سي سليمان": 900," زانة البيضاء": 900,"أمدوكال": 900,"أولاد عمار": 900," الحاسي": 900,"لازرو": 900,"بومية": 900,"بولهيلات": 900,"لارباع": 900,
+           "بجاية": 700, "آدكار": 700, "آغرام": 700, "آيت أرزين": 700, "آيت سماعيل": 700, "أقبو": 700, "أكفادو": 700, "أمالو": 700, "أميزور": 700, "أوزلاقن": 700, "أوقاس": 700, "إغيل علي": 700, "القصر": 700, "برباشة": 700, "بني جليل": 700, "بني كسيلة": 700, "بني معوش": 700, "بني مليكش": 700, "بوجليل": 700, "بوحمزة": 700, "بوخليفة": 700, "تازمالت": 700, "تاسكريوت": 700, "تالة حمزة": 700, "تامريجت": 700, "تاوريرت آغيل": 700, "تمقرة": 700, "توجة": 700, "تيزي أنبربار": 700, "تيشي": 700, "تيفرة": 700, "تيمزريت": 700, "تينبذار": 700, "خراطة": 700, "درقينة": 700, "ذراع القايد": 700, "سمعون": 700, "سوق أوفلة": 700, "سوق الاثنين": 700, "سيدي عياد": 700, "سيدي عيش": 700, "شلاطة": 700, "شميني": 700, "صدوق": 700, "طيبان": 700, "فرعون": 700, "فناية الماثن": 700, "قلعة بني عباس": 700, "كنديرة": 700, "لفلاي": 700, "مسيسنة": 700, "ملبو": 700, "وادي غير": 700,
+           "بسكرة": 950, "أوماش": 950,"البرانيس": 950,"الحاجب": 950,"الحوش": 950,"الغلوس": 950,"الفيض": 950,"القنطرة": 950,"المزيرعة": 950,"برج بن عزوز": 950,"بوشقرون": 950,"جمورة": 950,"خنقة سيدي ناجي": 950, "اورلال": 950,"زريبة الوادي": 950,"سيدي عقبة": 950,"شتمة": 950,"طولقة": 950,"عين الناقة": 950,"عين زعطوط": 950,"فوغالة": 950,"لوطاية": 950,"ليشانة": 950,"ليو": 950,"مخادمة": 950,"مشونش": 950,"مليلي": 950,
+           "بشار":1050, "القنادسة":1050,"المريجة":1050,"بني ونيف":1050,"لحمر":1050,"موغل":1050,"بوكايس":1050,"تاغيت":1050,"العبادلة":1050,"عرق فراج":1050,"مشرع هواري بومدين":1050,"بني عباس":1050,"تامترت":1050,"إقلي":1050,"الواتة":1050,"كرزاز":1050,"بني يخلف":1050,"تيمودي":1050,"أولاد خضير":1050,"قصابي":1050,"تبلبالة":1050,
+           "البليدة": 900,"الشبلي": 900,"بوينان": 900,"وادي العلايق": 900,"أولاد يعيش": 900,"الشريعة": 900,"العفرون": 900,"الشفة": 900,"حمام ملوان": 900,"بن خليل": 900,"الصومعة": 900,"موزاية": 900,"صوحان": 900,"مفتاح": 900,"أولاد سلامة": 900, "بوفاريك": 900,"الأربعاء": 900,"وادي جر": 900,"بني تامو": 900,"بوعرفة": 900, "بني مراد": 900,"بوقرة": 900,"قرواو": 900,"عين الرمانة": 900,"جبابرة": 900,
+           "البويرة": 700,"عين بسام": 700,"عين العلوي": 700,"عين الحجر": 700,"بشلول": 700,"الأصنام": 700,"العجيبية": 700,"أهل القصر": 700,"أولاد راشد": 700,"بئر غبالو": 700,"الروراوة": 700,"الخبوزية": 700,"برج أوخريص": 700,"مسدور": 700,"تاقديت": 700,"الحجرة الزرقاء": 700,"عين الترك": 700,"آيت لعزيز": 700,"الهاشمية": 700,"وادي البردي": 700,"حيزر": 700,"تاغزوت": 700,"قادرية": 700,"عمر": 700,"الجباحية": 700, "الأخضرية": 700,"بوكرام": 700,"معالة": 700,"بودربالة": 700,"الزبربر": 700,"قرومة": 700,"مشدا الله": 700,"الصھاريج": 700,"الشرفة": 700,"الحانيف": 700,"أغبالو": 700,"آث منصور": 700,"سوق الخميس": 700,"المقراني": 700, "سور الغزلان": 700,"المعمورة": 700,"ريدان": 700,"الحاكمية": 700,"الدشمية": 700,"ديرة": 700,
+           "تمنراست": 1600,"عين أمقل": 1600," إدلس": 1600,"عين صالح": 1600,"فقارة الزوى": 1600, "عين قزام": 1600, "إينغر": 1600, "تاظروك": 1600, "أبلسة": 1600," تين زواتين": 1600,
+           "تبسة": 950,"بئر العاتر": 950,"الشريعة": 950,"الونزة": 950,"الحمامات": 950,"الكويف": 950,"بوخضرة": 950,"مرسط": 950,"العقلة": 950,"الماء الأبيض": 950,"بكارية": 950,"نقرين": 950,"بئر مقدم": 950," المريج": 950,"أم علي": 950,"العوينات": 950,"بولحاف الدير": 950,"ثليجان": 950,"بئر الذهب": 950,"سطح قنطيس": 950,"صفصاف الوسرة": 950,"الحويجبات": 950,"المزرعة": 950,"بجن": 950,"فركان": 950,"قريقر": 950,"العقلة المالحة": 950,"عين الزرقاء": 950,
+           "تلمسان": 900,"المنصورة": 900,"تيرني بني ھديل": 900, "عين غرابة": 900,"بني مستار": 900,"شتوان": 900,"عين فزة": 900,"عمير": 900,"أولاد ميمون": 900,"الواد الأخضر": 900,"بني صميل": 900, "عين تالوت": 900,"عين نحالة": 900,"بن سكران": 900,"سيدي العبدلي": 900,"الرمشي": 900,"بني ورسوس": 900,"عين يوسف": 900,"السبعة شيوخ": 900,"الفحول": 900,"الحناية": 900, "زناتة": 900,"أولاد رياح": 900,"الغزوات": 900,"السواحلية": 900,"تيانت": 900, "دار يغمراسن": 900,"ندرومة": 900,"جبالة": 900,"فلاوسن": 900,"عين فتاح": 900, "عين الكبيرة": 900,"مغنية": 900,"حمام بوغرارة": 900,"بني بوسعيد": 900,"سيدي مجاهد": 900,"صبرة": 900,"بوحلو": 900,"سبدو": 900,"القور": 900,"العريشة": 900, "سيدي الجيلالي": 900,"البويهي": 900,"بني سنوس": 900,"العزايل": 900,"بني بهدل": 900, "باب العسة": 900,"السواني": 900,"سوق الثلاثاء": 900,"مرسى بن مهيدي": 900, "مسيردة الفواقة": 900, "هنين": 900,"بني خلاد": 900,
+           "تيارت": 900,"بوقرة ": 900,"تاخمرت": 900,"تاقدمت": 900,"توسنينة": 900,"تيدة": 900,"جبيلة الرصفاء": 900,"جيلالي بن عمار": 900,"حمادية": 900,"دحموني": 900,"الرحوية": 900,"الرشايقة": 900,"زمالة الأمير عبد القادر": 900,"السبت": 900,"سبعين": 900,"سرغين": 900,"السوقر": 900,"سي عبد الغني": 900,"سيدي بختي": 900,"سيدي حسني": 900,"سيدي عبد الرحمان": 900,"سيدي علي ملال": 900,"شحيمة": 900,"عين الحديد": 900,"عين الذهب": 900,"عين بوشقيف": 900,"عين دزاريت": 900,"عين كرمس": 900,"الفايجة": 900,"فرندة": 900,"قرطوفة": 900,"قصر الشلالة": 900,"مادنة": 900, "مدروسة": 900,"مدريسة": 900,"مشرع الصفاء": 900, "مغيلة": 900,"ملاكو": 900,"مهدية": 900,"الناظورة": 900,"النعيمة": 900,"وادي ليلي": 900,
+           "تيزي وزو": 590,"واسيف": 590,"أيت بومهدي": 590,"أيت تودرت": 590,"عين الحمام": 590,"أيت يحي": 590,"أقبيل": 590,"أبي يوسف": 590,"عزازقة": 590,"فريحة": 590,"زكري": 590,"إعكوران": 590,"إيفيغاء": 590,"بوغني": 590,"مشطراس": 590,"بونوح": 590,"أسي يوسف": 590,"ذراع الميزان": 590,"فريقات": 590,"عين الزاوية": 590,"أيت يحي موسى": 590,"واقنون": 590,"تيميزارت": 590,"آيت عيسى ميمون": 590,"الأربعاء نايث إيراثن": 590,"أيت قواشة": 590,"إرجن": 590,"أزفون": 590,"أقرو": 590,"أيت شفعة": 590,"أغريب": 590,"ذراع بن خدة": 590,"تادمايت": 590,"سيدي نعمان": 590,"تيرمتين": 590,"تيقزيرت": 590,"إفليسن": 590,"مزرانة": 590, "بوزقن": 590,"إجر": 590,"إيلولة أمالو": 590,"بني زيكي": 590,"بني دوالة": 590,"أيت محمود": 590,"بني عيسي": 590,"بني زمنزر": 400,"واضية": 590,"أقني قغران": 590,"تيزي نثلاثة": 590,"أيت بوعدو": 590, "معاتقة": 590,"سوق الاثنين": 590,"مقلع": 590,"أيت خليلي": 590,"الصوامع": 590,"بني يني": 590,"يطافن": 590,"إبودرارن": 590,"تيزي راشد": 590,"أيت أومالو": 590,"إيفرحونن": 590,"أمسوحال": 590,"إليلتن": 590,"تيزي غنيف": 590,"مكيرة": 590,"ماكودة": 590,"بوجيمة" : 590,
+           "الجزائر": 700, "بوزريعة": 700, "باب الواد": 700, "برج البحري": 700, "أولاد شبل": 700, "أولاد فايت": 700, "الأبيار": 700, "الجزائر الوسطى": 700, "الحامة - العناصر": 700, "الحراش": 700, "الحمامات": 700, "الدار البيضاء": 700, "الرايس حميدو": 700, "الرحمانية": 700, "الرغاية": 700, "الرويبة": 700, "السحاولة": 700, "السويدانية": 700, "الشراقة": 700, "العاشور": 700, "القبة": 700, "القصبة": 700, "الكاليتوس": 700, "المحالمة": 700, "المحمدية": 700, "المدنية": 700, "المرادية": 700, "المرسى": 700, "المقارية": 700, "بئر توتة": 700, "بئر خادم": 700, "بئر مراد رايس": 700, "باب الزوار": 700, "بابا حسن": 700, "باش جراح": 700, "براقي": 700, "برج الكيفان": 700, "بن عكنون": 700, "بني مسوس": 700, "بوروبة": 700, "بولوغين": 700, "جسر قسنطينة": 700, "حسين داي": 700, "حيدرة": 700, "خرايسية": 700, "دالي إبراهيم": 700, "دويرة": 700, "زرالدة": 700, "سطاوالي": 700, "سيدي موسى": 700, "عين البنيان": 700, "عين طاية": 700, "هراوة": 700, "واد قريش": 700, "وادي السمار": 700, "تسالة المرجة": 700, "قصبة الجزائر": 700,
+           "الجلفة": 950, "أم الشقاق": 950, "أم العظام": 950, "الإدريسية": 950, "الخميس": 950, "القديد": 950, "بن يعقوب": 950, "بنھار": 950, "بويرة الأحداب": 950, "بيرين": 950, "تعظميت": 950, "حاسي العش": 950, "حاسي بحبح": 950, "حاسي فدول": 950, "حد الصحاري": 950, "دار الشيوخ": 950, "دلدول": 950, "دويس":950, "زعفران": 950, "زكار": 950, "سد الرحال": 950, "سلمانة": 950, "سيدي بايزيد": 950, "سيدي لعجال": 950, "الشارف": 950, "عمورة": 950, "عين الابل": 950, "عين الشهداء": 950, "عين فقه": 950, "عين معبد": 950, "عين وسارة": 950, "فرزول": 950, "فيض البطمة": 950, "قرنيني": 950, "قطارة": 950, "مجبارة": 950, "مسعد": 950, "مليليحة": 950,
+           "جيجل": 900, "أولاد رابح": 900, "أولاد يحيى خدروش": 900, "إيراقن": 900, "الجمعة بني حبيبي": 900, "السطارة": 900, "الشحنة": 900, "الشقفة": 900, "العوانة": 900, "الميلية": 900, "برج الطهر": 900, "بلدية الأمير عبد القادر": 900, "بودريعة بن ياجيس": 900, "بوراوي بلهادف": 900, "بوسيف أولاد عسكر": 900, "تاكسنة": 900, "جيملة": 900, "خيري وادي العجول": 900, " العنصر": 900, " الميلية": 900, "زيامة منصورية": 900, "سلمى بن زيادة": 900, "سيدي عبد العزيز": 900, "سيدي معروف": 900, "الطاهير": 900, "غبالة": 900, "قاوس": 900, "القنار": 900, "وجانة": 900,
+           "سطيف": 900, "العلمة": 900, "بازر الصخرة": 900, "القلتة الزرقاء": 900, "عين آزال": 900, "عين الحجر": 900, "بئر حدادة": 900, "بيضاء برج": 900, "عين ولمان": 900, "قصر الأبطال": 900, "قلال": 900, "أولاد سي أحمد": 900, "عين أرنات": 900, "مزلوق": 900, "عين عباسة": 900, "الأوريسية": 900, "عين الكبيرة": 900, "دهامشة": 900, "أولاد عدوان": 900, "عموشة": 900, "واد البارد": 900, "تيزي نبشار": 900, "بابور": 900, "سرج الغول": 900, "بني عزيز": 900, "عين السبت": 900, "معاوية": 900, "بني ورتيلان": 900, "بني شبانة": 900, "بني محلي": 900, "عين لقراج": 900, "بئر العرش": 900, "بلاعة": 900, "الولجة": 900, "تاشودة": 900, "بوعنداس": 900, "آيت نوال مزادة": 900, "آيت تيزي": 900, "بوسلام": 900, "بوقاعة": 900, "عين الروى": 900, "بني حسين": 900, "جميلة": 900, "بني فودة": 900, "قنزات": 900, "حربيل": 900, "قجال": 900, "أولاد صابر": 900, "حمام قرقور": 900, "ذراع قبيلة": 900, "حمام السخنة": 900, "الطاية": 900, "التلة": 900, "ماوكلان": 900, "تالة ايفاسن": 900, "صالح باي": 900, "بوطالب": 900, "الحامة": 900, "أولاد تبان": 900, "الرصفة": 900,
+           "سعيدة": 900, "أولاد براهيم": 900,"أولاد خالد": 900,"الحساسنة": 900,"تيرسين": 900,"ذوي ثابت": 900,"سيدي أحمد": 900,"سيدي عمر": 900,"سيدي بوبكر": 900,"عين الحجر": 900,"العين السخونة": 900,"عين سلطان": 900,"معمورة": 900,"مولاي لعربي": 900,"هونة": 900, "يوب": 900,
+           "سكيكدة": 900, "أم الطوب": 900,"أمجاز الدشيش": 900,"أولاد أحبابة": 900,"أولاد عطية": 900, "الحدائق": 900,"السبت": 900,"الشرايع": 900,"الكركرة": 900,"المرسى": 900,"الولجة بوالبلوط": 900,"بكوش لخضر": 900, "بن عزوز": 900,"بني بشير": 900,"بني زيد": 900,"بني ولبان": 900,"بودوخة": 900,"بوشطاطة": 900,"بين الويدان": 900,"تمالوس": 900,"جندل ": 900,"الحروش": 900,"حمادي كرومة": 900,"خناق مايون": 900,"رمضان جمال": 900,"زردازة": 900,"زيتونة": 900,"سيدي مزغيش": 900,"صالح بوالشعور": 900,"عزابة": 900,"عين بوزيان": 900,"عين زويت": 900,"عين شرشار": 900,"عين قشرة": 900,"فلفلة": 900, "القل": 900,"قنواع": 900,"لغدير": 900,"وادي الزهور": 900,
+           "سيدي بلعباس": 900, "الحصيبة": 900, "الضاية": 900, "العمارنة": 900, "المسيد": 900, "بئر الحمام": 900, "بدر الدين المقراني": 900, "بلعربي": 900, "بن باديس": 900, "بن عشيبة شلية": 900, "بوجبهة البرج": 900, "بوخنيفيس": 900, "تاودموت": 900, "تسالة": 900, "تغاليمت": 900, "تفسور": 900, "تلاغ": 900, "تلموني": 900, "تنيرة": 900, "حاسي دحو": 900, "حاسي زهانة": 900, "راس الماء": 900, "رجم دموش": 900, "زروالة": 900, "سفيزف": 900, "سهالة ثاورة": 900, "سيدي إبراهيم": 900, "سيدي حمادوش": 900, "سيدي خالد": 900, "سيدي دحو الزائر": 900, "سيدي شعيب": 900, "سيدي علي بن يوب": 900, "سيدي علي بوسيدي": 900, "سيدي لحسن": 900, "سيدي يعقوب": 900, "شيطوان بليلة": 900, "طابية": 900, "عين أدان": 900, "عين البرد": 900, "عين الثريد": 900, "عين تندامين": 900, "عين قادة": 900, "لمطار": 900, "مرحوم": 900, "مرين": 900, "مزاورو": 900, "مصطفى بن إبراهيم": 900, "مقدرة": 900, "مولاي سليسن": 900, "واد السبع": 900, "واد تاوريرة": 900, "واد سفيون": 900,
+           "عنابة": 900, "برحال": 900, "الحجار": 900,"العلمة": 900,"البوني": 900,"وادي العنب": 900,"الشرفة": 900, "سرايدي": 900,"عين الباردة": 900,"شطايبي": 900,"سيدي عمار": 900,"تريعات": 900,
+           "قالمة": 900,"الدهوارة": 900,"الركنية": 900,"الفجوج": 900,"برج صباط": 900,"بلخير": 900,"بن جراح": 900,"بني مزلين": 900,"بوحشانة": 900,"بوحمدان": 900,"بوشقوف": 900,"بوعاطي محمود": 900,"بومهرة أحمد": 900,"تاملوكة": 900,"جبالة لخميسي": 900,"حمام المسخوطين": 900,"حمام النبايل": 900,"حمام بلحشاني": 900, "حمام دباغ": 900,"راس العقبة": 900,"سلاوة عنونة": 900,"عين العربي": 900,"عين بن بيضاء": 900,"عين رقادة": 900,"عين صندل": 900, "عين مخلوف": 900, "قلعة بوصبع": 900,"لخزارة": 900,"مجاز الصفاء": 900,"مجاز عمار": 900,"نشماية": 900,"هواري بومدين": 900,"هيليوبوليس": 900, "وادي الزناتي": 900,"وادي الشحم": 900,"وادي فراغة": 900,
+           "قسنطينة": 900, "الخروب": 900,"عين سمارة": 900,"أولاد رحمون": 900, "عين عبيد": 900,"ابن باديس": 900, "زيغود يوسف": 900,"بني حميدان": 900,"حامة بوزيان": 900,"ديدوش مراد": 900, "ابن زياد": 900,"مسعود بوجريو": 900,
+           "المدية": 900, "أم الجليل": 900, "أولاد إبراهيم": 900, "أولاد بوعشرة": 900, "أولاد دايد": 900, "أولاد عنتر": 900, "أولاد امعرف": 900, "أولاد هلال": 900, "بئر بن عابد": 900, "البرواقية": 900, "بعطة": 900, "بن شكاو": 900, "بني سليمان": 900, "بوسكن": 900, "بوشراحيل": 900, "بوعيش": 900, "بوعيشون": 900, "تابلاط": 900, "تفراوت": 900, "تمسقيدة": 900, "تيزي المهدي": 900, "ثلاثة الدوائر": 900, "جواب": 900, "الحمدانية": 900, "حناشة": 900, "خمس جوامع": 900, "دراق": 900, "ذراع السمار": 900, "الربعية": 900, "الزبيرية": 900, "السانق": 900, "سدراية": 900, "سغوان": 900, "السواقي": 900, "سي المحجوب": 900, "سيدي الربيع": 900, "سيدي دامد": 900, "سيدي زهار": 900, "سيدي زيان": 900, "سيدي نعمان": 900, "شلالة العذاورة": 900, "شنيقل": 900, "الشهبونية": 900, "عزيز": 900, "العزيزية": 900, "العمارية": 900, "العوينات": 900, "العيساوية": 900, "عين القصير": 900, "عين بوسيف": 900, "فج الحوضين": 900, "قصر البخاري": 900, "القلب الكبير": 900, "الكاف الأخضر": 900, "مجبر": 900, "مزغنة": 900, "مغراوة": 900, "مفاتحة": 900, "ميهوب": 900, "وادي حربيل": 900, "عوامري": 900, "وزرة": 900,
+           "مستغانم": 900,"حاسي مميش": 900,"مزغران": 900, "ستيدية": 900,"عين نويسي": 900,"الحسيان": 900,"فورناكة": 900,"سيدي بلطار": 900,"واد الخير": 900, "سيدي علي": 900,"أولاد معلة": 900,"تازغيت": 900,"نكمارية": 900, "خير الدين": 900,"عين بودنار": 900,"الصفصاف": 900,"عين تادلس": 900,"صور": 900,"بوقرات": 900,"صيرات": 900,"السوافلية": 900,"مسرى": 900,"عين سيدي الشريف": 900,"المنصورة": 900,"الطواهرية": 900,"الصيادة": 900,"عشعاشة": 900,"خضراء": 900,"أولاد بوغالم": 900,"سيدي الأخضر": 900, "حجاج": 900,"عبد المالك رمضان": 900,
+           "المسيلة": 900, "مقرة": 900, "برهوم": 900, "بلعايبة": 900, "عين الخضراء": 900, "الدهاهنة": 900, "أولاد دراج": 900, "معاضيد": 900, "صوامع": 900, "أولاد عدي لقبالة": 900, "مطارفة": 900, "حمام ضلعة": 900, "تارمونت": 900, "أولاد منصور": 900, "ونوغة": 900, "عين الحجل": 900, "سيدي هجرس": 900, "سيدي عيسى": 900, "بوطي سايح": 900, "بني يلمان": 900, "شلال": 900, "خطوطي سد الجير": 900, "أولاد ماضي": 900, "المعاريف": 900, "خبانة": 900, "الحومد": 900, "مسيف": 900, "مجدل": 900, "مناعة": 900, "بوسعادة": 900, "هامل": 900, "ولتام": 900, "أولاد سيدي إبراهيم": 900, "بن زوه": 900, "سيدي عامر": 900, "تامسة": 900, "بن سرور": 900, "محمد بوضياف (واد شعير)": 900, "زرزور": 900, "أولاد سليمان": 900, "عين الملح": 900, "بئر فضة": 900, "عين فارس": 900, "سيدي امحمد": 900, "عين الريش": 900, "جبل مسعد": 900, "سليم": 900,
+           "معسكر": 900, "البرج": 900, "البنيان": 900, "السحايلية": 900, "الشرفة": 900, "الصحاورية": 900, "العلايمية": 900, "الغمري": 900, "القعدة": 900, "القيطنة": 900, "المامونية": 900, "المحمدية": 900, "المنور": 900, "الهاشم": 900, "بوحنيفية": 900, "بوهني": 900, "تيزي": 900, "تيغنيف": 900, "حسين": 900, "خلوية": 900, "دوار الملح": 900, "رأس عين عميروش": 900, "زلامطة": 900, "زهانة": 900, "سجرارة": 900, "سيدي بوسعيد": 900, "سيدي عبد الجبار": 900, "سيدي عبد المؤمن": 900, "سيدي قادة": 900, "عقاز": 900, "عوف": 900, "عين افرص": 900, "عين فارس": 900, "عين فراح": 900, "عين فكان": 900, "غروس": 900, "غريس": 900, "فراقيق": 900, "فروحة": 900, "قرجوم": 900, "القرط": 900, "ماقضة": 900, "ماوسة": 900, "مطمور": 900, "مقطع دوز": 900, "نسموط": 900, "وادي الأبطال": 900, "وادي تاغية": 900,
+           "ورقلة": 950, "الرويسات": 950, "حاسي مسعود": 9500,"تقرت": 950,"تبسبست": 950,"النزلة": 950,"الزاوية العابدية": 950,"تماسين": 950,"بلدة عمر": 950,"المقارين": 950,"أنقوسة": 950," سيدي خويلد": 950, "عين البيضاء": 950,"حاسي بن عبد الله": 950,"البرمة": 950,"سيدي سليمان": 950,"الحجيرة": 950," العالية": 950,"الطيبات": 950," بن ناصر": 950,"المنقر": 950, "النقوسة": 950,
+           "وهران": 900, "أرزيو": 900,"العلايمية": 900,"الكرمة": 900,"بئر الجير": 900,"البرية": 900,"بن فريحة": 900, "بطيوة": 900,"بوتليليس": 900,"بوسفر": 900,"بوفاطيس": 900,"حاسي بن عقبة": 900,"حاسي بونيف": 900,"حاسي مفسوخ": 900,"دوار الملح": 900,"السانية": 900,"سيدي الشحمي": 900,"سيدي بن يبقى": 900,"سيق": 900,"طفراوي": 900,"العنصر": 900,"عين البية": 900,"عين الكرمة": 900, "عين الترك": 900,"قديل": 900,"مرسى الحجاج": 900,"المرسى الكبير": 900,"مسرغين": 900,"وادي تليلات": 900,
+           "البيض": 1050,"أربوات": 1050,"الأبيض سيدي الشيخ": 1050,"البنود": 1050,"الخيثر": 1050,"الرقاصة": 1050,"الشلالة": 1050,"المحرة": 1050,"بوسمغون": 1050, "بريزينة": 1050,"بوعلام": 1050,"بوقطب": 1050,"توسمولين": 1050,"ستيتن": 1050,"سيدي سليمان": 1050,"سيدي طيفور": 1050,"سيدي عمر": 1050,"شقيق": 1050,"عين العراك": 1050, "الغاسول": 1050,"كاف لحمر": 1050,"كراكدة": 1050,
+           "إليزي": 1600,"أوهانت": 1600,"إحرر": 1600, "إن أميناس": 1600,"برج الحواس": 1600,"برج تارات": 1600, "جانت": 1600, "برج عمر إدريس": 1600,"دبداب": 1600,
+           "برج بوعريريج": 900,"أولاد أبراهم": 900,"أولاد دحمان": 900,"أولاد سيدي إبراهيم": 900, "الحمادية": 900,"العش": 900,"العناصر": 900,"القلة": 900,"القليعة": 900,"الماين": 900,"المهير": 900,"بئر قصد علي": 900,"برج الغدير": 900,"برج زمورة": 900,"عين تسرة": 900,"بليمور": 900,"بن داود": 900,"تسامرت": 900,"تفرق": 900,"تقلعيت": 900,"تكستار": 900,"ثنية النصر": 900,"جعافرة": 900,"حرازة": 900,"حسناوة": 900,"خليل": 900, "رأس الوادي": 900,"الرابطة": 900,"سيدي امبارك": 900,"عين تاغروت": 900,"غيلاسة": 900,"القصور": 900,"مجانة": 900, "المنصورة": 900,"الياشير": 900,
+           "بومرداس": 700,"أولاد عيسى": 700,"أولاد موسى": 700,"أولاد هداج": 700,"اعفير": 700,"الأربعطاش": 700,"الثنية": 700,"الخروبة": 700,"الناصرية": 700,"برج منايل": 700, "بغلية": 700,"بن شود": 700,"بني عمران": 700, "بودواو": 700,"بوزرقزق قدارة": 700,"تاورقة": 700,"تجلابين": 700,"تيمزريت": 700,"جنات": 700,"حمادي": 700, "دلس": 700, "خميس الخشنة": 700,"زموري": 700,"سوق الحد": 700,"سي مصطفى": 700,"سيدي داود": 700,"شعبة العامر": 700,"عمال": 700,"قورصو": 700,"لقاطة": 700,"يسر": 700,
+           "الطارف": 900,"بحيرة الطيور": 900,"بريحان": 900,"البسباس": 900, "بن مهيدي": 900, "بوثلجة": 900, "بوحجار": 900,"حمام بني صالح": 900,"الذرعان": 900,"رمل السوق": 900,"زريزر": 900,"الزيتونة": 900,"السوارخ": 900,"الشافية": 900,"شبيطة مختار": 900,"الشط": 900,"الشيحاني": 900,"عصفور": 900,"عين العسل": 900,"عين الكرمة": 900,"العيون": 900, "القالة": 900,"واد الزيتون": 900,
+           "تندوف": 1600, "أم العسل": 1600,
+           "تيسمسيلت": 900,"أولاد بسام": 900,"الأربعاء": 900,"الأزهرية": 900,"العيون": 900,"المعاصم": 900,"الملعب": 900,"اليوسفية": 900, "برج الأمير عبد القادر": 900,"برج بونعامة": 900,"بني شعيب": 900,"بني لحسن": 900,"بوقايد": 900,"تملاحت": 900,"ثنية الحد": 900, "خميستي": 900,"سيدي العنتري": 900,"سيدي بوتشنت": 900,"سيدي سليمان": 900,"سيدي عابد": 900,"عماري": 900, "لرجام": 900,
+           "الوادي": 950,"أميه ونسة": 950, "البياضة": 950,"الحمادين": 950,"الحمراية": 950,"الدبيلة": 950,"الرباح": 950,"الرقيبة": 950,"الطريفاوي": 950,"العقلة": 950,"المرزاقة": 950,"المقرن": 950,"النخلة": 950,"بن قشة": 950,"تغزوت": 950,"تندلة": 950, "حاسي خليفة": 950,"حساني عبد الكريم": 950,"دوار الماء": 950,"سيدي عون": 950,"طالب العربي": 950,"عين الشوشة": 950, "قمار": 950,"كوينين": 950,"وادي العلندة": 950,"ورماس": 950,"وغلانة": 950,
+           "خنشلة": 900,"عين الطويلة": 900, "بابار": 900,"بغاي": 900,"بوحمامة": 900, "ششار": 900,"شلية": 900,"جلال": 900, "الحامة": 900,"المحمل": 900,"الولجة": 900,"انسيغة": 900,"قايس": 900,"خيران": 900,"لمصارة": 900,"متوسة": 900,"أولاد رشاش": 900,"الرميلة": 900,"طامزة": 900,"تاوزيانت": 900, "يابوس": 900,
+           "سوق أهراس": 900,"أم العظائم": 900,"أولاد إدريس": 900,"أولاد مؤمن": 900,"الحنانشة": 900,"الراقوبة": 900,"الزوابي": 900,"بئر بوحوش": 900,"تاورة": 900,"ترقالت": 900,"تيفاش": 900, "الحدادة": 900,"الخضارة": 900,"خميسة": 900,"الدريعة": 900,"الزعرورية": 900,"سافل الويدان": 900,"سدراتة": 900, "سيدي فرج": 900,"عين زانة": 900,"عين سلطان": 900,"مداوروش": 900,"المراهنة": 900,"المشروحة": 900,"وادي الكبريت": 900,"ويلان": 900, "المحمل": 900,
+           "تيبازة": 900,"أغبال": 900,"الأرهاط": 900,"الداموس": 900,"الشعيبة": 900,"الناظور": 900,"بني ميلك": 900,"بو إسماعيل": 900,"بورقيقة": 900,"بوهارون": 900,"حجرة النص": 900,"حجوط": 900,"حطاطبة": 900,"حمر العين": 900,"خميستي": 900, "دواودة": 900,"سيدي اعمر ": 900,"سيدي راشد": 900,"سيدي سميان": 900,"سيدي غيلاس": 900, "شرشال": 900,"عين تقورايت": 900, "فوكة": 900,"القليعة": 900, "قوراية": 900,"مراد": 900,"مسلمون": 900,"مناصر": 900,
+           "ميلة": 900,"أحمد راشدي": 900,"أولاد خلوف": 900,"التلاغمة": 900,"الرواشد": 900,"العياضي برباس": 900,"القرارم قوقة": 900,"المشيرة": 900,"بن يحيى عبد الرحمان": 900,"بوحاتم": 900,"تاجنانت": 900,"تبرقنت": 900,"ترعي باينان": 900,"تسالة لمطاعي": 900,"تسدان حدادة": 900,"حمالة": 900,"دراحي بوصلاح": 900,"رجاص": 900,"زغاية": 900,"سيدي خليفة ": 900,"سيدي مروان": 900, "شلغوم العيد": 900,"الشيقارة": 900,"عميرة أراس": 900,"عين البيضاء حريش": 900,"عين التين": 900,"عين الملوك": 900, "فرجيوة": 900,"مينار زارزة": 900,"وادي العثمانية": 900,"وادي النجاء": 900,"وادي سقان": 900,"يحيى بن قشة": 900,
+           "عين الدفلى": 900,"الحسنية": 900,"الروينة": 900,"العبادية": 900,"الماين ": 900,"المخاطرية": 900,"بئر ولد خليفة": 900,"بربوش": 900,"برج الأمير خالد": 900,"بطحية": 900,"بلعاص": 900,"بن علال": 900,"بوراشد": 900,"بومدفع": 900,"تسيلي": 900,"تيبركانين": 900,"جليدة": 900,"جمعة ولاد الشيخ": 900,"جندل": 900,"حمام ريغة": 900,"خميس مليانة": 900,"زدين": 900,"سيدي الأخضر": 900,"طارق بن زياد": 900,"العامرة": 900,"عريب": 900,"العطاف": 900,"عين بنيان": 900,"عين بويحيى": 900,"عين تركي": 900,"عين سلطان": 900,"عين لشياخ": 900, "مليانة": 900,"واد الشرفاء": 900,"وادي الجمعة": 900,
+           "النعامة": 1050,"البيوض": 1050,"القصدير ": 1050, "مشرية": 1050,"تيوت": 1050,"جنين بورزق": 1050,"صفيصيفة": 1050,"عسلة": 1050, "عين الصفراء": 1050,"عين بن خليل": 1050, "مغرار": 1050,"مكمن بن عمار": 1050,
+           "عين تموشنت": 900,"آغلال": 900,"الأمير عبد القادر": 900,"الحساسنة": 900,"العامرية": 900,"المالح ": 900,"امسعيد": 900,"اولاد الكيحل": 900, "أولاد بوجمعة": 900, "بني صاف": 900,"بوزجار": 900,"تارقة": 900,"تامزوغة": 900,"حاسي الغلة": 900, "حمام بوحجر": 900,"رشقون": 900,"سيدي أورياش": 900,"سيدي الصافي": 900,"سيدي بن عدة": 900,"سيدي بومدين": 900,"شعبة اللحم": 900,"شنتوف": 900,"عقب الليل": 900,"عين الأربعاء": 900,"عين الطلبة": 900,"عين الكيحل": 900,"وادي الصباح": 900,"وادي برقش": 900,"ولهاصة": 900,
+           "غرداية": 950,"العطف": 950,"بريان": 950,"بونورة": 950,"حاسي الفحل": 950,"حاسي القارة ": 950,"زلفانة": 950,"سبسب": 950, "ضاية بن ضحوة": 950,"القرارة": 950,"متليلي": 950,"المنصورة": 950, "المنيعة": 950,
+           "غليزان": 900, " أولاد سيدي الميهوب": 900, "أولاد يعيش": 900, "الحمادنة": 900, "الرمكة": 900, "القطار": 900, "القلعة": 900, "المرجة": 900, "المطمر": 900, "الولجة": 900, "بلعسل": 900, "بن داود": 900, "بني درقن": 900, "بني زنطيس": 900, "جديوية": 900, "الحاسي": 900, "حد الشكالة": 900, "حمري": 900, "دار بن عبد الله": 900, "زمورة": 900, "سوق الحد": 900, "سيدي امحمد بن علي": 900, "سيدي خطاب": 900, "سيدي سعادة": 900, "سيدي لزرق": 900, "سيدي محمد بن عودة": 900, "عمي موسى": 900, "عين الرحمة": 900, "عين طارق": 900, "لحلاف": 900, "مازونة": 900, "مديونة": 900, "منداس": 900, "واد الجمعة": 900, "واد السلام": 900, "وادي ارهيو": 900, "واريزان": 900, "يلل": 900,
+           "تيميمون": 1050, "أوقروت": 1050,"أولاد السعيد": 1050,"المطارفة": 1050,"تينركوك": 1050,"دلدول": 1050,"شروين": 1050,"طالمين": 1050,"قصر قدور": 1050,"أولاد عيسى": 1050,
+           "برج باجي مختار": 1050,"تيمياوين": 1050,
+           "أولاد جلال": 950,"سيدي خالد": 950,"رأس الميعاد": 950,"البسباس": 950,"الشعيبة": 950,"الدوسن": 950,
+           "بني عباس": 1050,"تبلبالة": 1050,"إقلي": 1050,"الواتة": 1050,"كرزاز": 1050,"أولاد خضير": 1050," تامترت": 1050,"بني يخلف": 1050,"تيمودي": 1050," وقصابي": 1050,
+           "عين صالح": 1600,"إن غار": 1600," فقارة الزاوية": 1600,
+           "عين قزام": 1600," تين زاوتين": 1600,
+           "تقرت": 950,"بن ناصر": 950,"بلدة عمر": 950,"العالية": 950,"الحجيرة": 950,"مقارين": 950,"المنقر": 950,"النزلة": 950,"سيدي سليمان": 950,"الطيبات": 950,"تماسين": 950,"تبسبست": 950,"الزاوية العابدية": 950,
+           "جانت": 1600," برج الحواس": 1600,
+           "المغير": 950,"أم الطيور": 950,"جامعة": 950,"سيدي عمران": 950,"اسطيل": 950,"سيدي خليل": 950,"تندلة": 950,"المرارة": 950,
+           "المنيعة": 950,"حاسي القارة": 950,"المنصورة": 950,"حاسي الفحل": 950,
+        };
+
+        // Office delivery fees by wilaya
+        const officeDeliveryFees = {
+            "أدرار": 850,
+            "الشلف": 650,
+            "الأغواط": 750,
+            "أم البواقي": 650,
+            "باتنة": 650,
+            "بجاية": 550,
+            "بسكرة": 750,
+            "بشار": 850,
+            "البليدة": 650,
+            "البويرة": 550,
+            "تمنراست": 1400,
+            "تبسة": 750,
+            "تلمسان": 650,
+            "تيارت": 650,
+            "تيزي وزو": 450,
+            "الجزائر": 550,
+            "الجلفة": 750,
+            "جيجل": 650,
+            "سطيف": 650,
+            "سعيدة": 650,
+            "سكيكدة": 650,
+            "سيدي بلعباس": 650,
+            "عنابة": 650,
+            "قالمة": 650,
+            "قسنطينة": 650,
+            "المدية": 650,
+            "مستغانم": 650,
+            "المسيلة": 650,
+            "معسكر": 650,
+            "ورقلة": 750,
+            "وهران": 650,
+            "البيض": 850,
+            "إليزي": 1400,
+            "برج بوعريريج": 650,
+            "بومرداس": 550,
+            "الطارف": 650,
+            "تندوف": 1400,
+            "تيسمسيلت": 650,
+            "الوادي": 750,
+            "خنشلة": 650,
+            "سوق أهراس": 650,
+            "تيبازة": 650,
+            "ميلة": 650,
+            "عين الدفلى": 650,
+            "النعامة": 850,
+            "عين تموشنت": 650,
+            "غرداية": 750,
+            "غليزان": 650,
+            "تيميمون": 850,
+           "برج باجي مختار": 850,
+           "أولاد جلال": 750,
+           "بني عباس": 850,
+           "عين صالح": 1400,
+           "عين قزام": 1400,
+           "تقرت": 750,
+           "جانت": 1400,
+           "المغير": 750,
+           "المنيعة": 750,
+        };
+
+        // Animation de chargement initiale
+        document.addEventListener('DOMContentLoaded', function() {
+            // Ajout de classes d'animation aux éléments
+            const animatedElements = document.querySelectorAll('.fade-in, .slide-up');
+            animatedElements.forEach(el => {
+                el.style.opacity = '0';
+            });
+            
+            setTimeout(() => {
+                animatedElements.forEach(el => {
+                    el.style.opacity = '1';
+                });
+            }, 100);
+            
+            // Remplir la liste des wilayas
+            populateWilayas();
+            
+            // Initialiser le calcul du total
+            calculateTotal();
+        });
+
+        // Remplir la liste déroulante des wilayas
+        function populateWilayas() {
+            const wilayaSelect = document.getElementById('wilaya');
+            wilayaSelect.innerHTML = '';
+            
+            algerianWilayas.forEach(wilaya => {
+                const option = document.createElement('option');
+                option.value = wilaya.name;
+                option.textContent = wilaya.name;
+                wilayaSelect.appendChild(option);
+            });
+            
+            // Écouter le changement de wilaya pour remplir les communes
+            wilayaSelect.addEventListener('change', function() {
+                populateCommunes(this.value);
+                calculateTotal();
+            });
+            
+            // Remplir les communes pour la première wilaya
+            if (algerianWilayas.length > 0) {
+                populateCommunes(algerianWilayas[0].name);
+            }
+        }
+
+        // Remplir la liste déroulante des communes
+        function populateCommunes(wilayaName) {
+            const communeSelect = document.getElementById('commune');
+            communeSelect.innerHTML = '';
+            
+            const wilaya = algerianWilayas.find(w => w.name === wilayaName);
+            if (wilaya) {
+                wilaya.communes.forEach(commune => {
+                    const option = document.createElement('option');
+                    option.value = commune;
+                    option.textContent = commune;
+                    communeSelect.appendChild(option);
+                });
+            }
+            
+            // Écouter le changement de commune pour recalculer les frais
+            communeSelect.addEventListener('change', calculateTotal);
+        }
+
+        // Calcul du prix total
+        function calculateTotal() {
+            const productPrice = 2900;
+            const quantity = parseInt(document.getElementById('quantity').value) || 1;
+            const wilaya = document.getElementById('wilaya').value;
+            const commune = document.getElementById('commune').value;
+            const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+            
+            // Calculer les frais de livraison
+            let deliveryCost = 0;
+            
+            if (deliveryMethod === 'home') {
+                // Frais de livraison à domicile par commune
+                deliveryCost = deliveryFees[commune] || 0;
+            } else {
+                // Frais de livraison au bureau par wilaya
+                deliveryCost = officeDeliveryFees[wilaya] || 0;
+            }
+            
+            // Calculer le total
+            const total = (productPrice * quantity) + deliveryCost;
+            
+            // Mettre à jour l'affichage
+            document.getElementById('product-price').textContent = `${productPrice * quantity} دج`;
+            document.getElementById('delivery-price').textContent = `${deliveryCost} دج`;
+            document.getElementById('total-price').textContent = `${total} دج`;
+            document.getElementById('sticky-total').textContent = `${total} دج`;
+        }
+
+        // Validation du formulaire
+        function validateForm() {
+            let isValid = true;
+            const requiredFields = [
+                { id: 'fullname', errorId: 'fullname-error' },
+                { id: 'phone', errorId: 'phone-error' },
+                { id: 'size', errorId: 'size-error' },
+                { id: 'wilaya', errorId: 'wilaya-error' }
+            ];
+            
+            // Réinitialiser les erreurs
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const error = document.getElementById(field.errorId);
+                
+                input.classList.remove('error-border');
+                error.classList.add('hidden');
+            });
+            
+            // Vérifier les champs obligatoires
+            requiredFields.forEach(field => {
+                const input = document.getElementById(field.id);
+                const error = document.getElementById(field.errorId);
+                
+                if (!input.value.trim()) {
+                    input.classList.add('error-border');
+                    error.classList.remove('hidden');
+                    isValid = false;
+                }
+            });
+            
+            // Vérifier le numéro de téléphone
+            const phone = document.getElementById('phone').value;
+            const phoneError = document.getElementById('phone-error');
+            if (!/^\d{10}$/.test(phone)) {
+                document.getElementById('phone').classList.add('error-border');
+                phoneError.textContent = 'يرجى إدخال رقم هاتف صحيح (10 أرقام)';
+                phoneError.classList.remove('hidden');
+                isValid = false;
+            }
+            
+            // Vérifier la méthode de livraison à domicile
+            const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+            if (deliveryMethod === 'home') {
+                const commune = document.getElementById('commune').value;
+                const communeError = document.getElementById('commune-error');
+                
+                if (!commune) {
+                    document.getElementById('commune').classList.add('error-border');
+                    communeError.classList.remove('hidden');
+                    isValid = false;
+                }
+            }
+            
+            return isValid;
+        }
+
+        // Animation d'image zoomée
+        const productImages = document.querySelectorAll('.product-image img');
+        const zoomContainer = document.querySelector('.zoom-image');
+        const zoomedImg = document.getElementById('zoomed-img');
+        
+        productImages.forEach(img => {
+            img.addEventListener('click', function() {
+                zoomedImg.src = this.src;
+                zoomContainer.classList.add('active');
+            });
+        });
+        
+        zoomContainer.addEventListener('click', function(e) {
+            if (e.target === zoomContainer || e.target.classList.contains('fa-times')) {
+                zoomContainer.classList.remove('active');
+            }
+        });
+
+        // Animation des options de couleur
+        const colorOptions = document.querySelectorAll('.custom-radio input');
+        colorOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                const allSpans = document.querySelectorAll('.custom-radio span:first-child');
+                allSpans.forEach(span => {
+                    span.style.transform = 'scale(1)';
+                    span.style.boxShadow = '0 0 5px rgba(0,0,0,0.1)';
+                });
+                
+                const selectedSpan = this.nextElementSibling;
+                selectedSpan.style.transform = 'scale(1.1)';
+                selectedSpan.style.boxShadow = '0 0 10px rgba(232, 143, 151, 0.7)';
+            });
+        });
+
+        // Animation des options de livraison
+        const deliveryOptions = document.querySelectorAll('.delivery-option input');
+        deliveryOptions.forEach(option => {
+            option.addEventListener('change', function() {
+                const allDivs = document.querySelectorAll('.delivery-option > div');
+                allDivs.forEach(div => {
+                    div.style.transform = 'translateY(0)';
+                });
+                
+                const selectedDiv = this.nextElementSibling;
+                selectedDiv.style.transform = 'translateY(-5px)';
+                
+                // Afficher/masquer le champ de la commune
+                const communeContainer = document.getElementById('commune-container');
+                if (this.value === 'home') {
+                    communeContainer.classList.remove('hidden');
+                    communeContainer.classList.add('slide-up');
+                    setTimeout(() => {
+                        communeContainer.style.opacity = '1';
+                    }, 10);
+                } else {
+                    communeContainer.classList.add('hidden');
+                }
+                
+                calculateTotal();
+            });
+        });
+
+        // Animation des sélecteurs
+        const selects = document.querySelectorAll('select');
+        selects.forEach(select => {
+            select.addEventListener('change', function() {
+                this.classList.add('bounce');
+                setTimeout(() => {
+                    this.classList.remove('bounce');
+                }, 500);
+                
+                calculateTotal();
+            });
+        });
+
+        // Animation du bouton de commande
+        const submitButtons = document.querySelectorAll('#submit-btn, #sticky-submit');
+        const orderModal = document.getElementById('orderModal');
+        const editOrderBtn = document.getElementById('editOrder');
+        const confirmOrderBtn = document.getElementById('confirmOrder');
+        const orderFormSection = document.getElementById('order-form-section');
+        
+        submitButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Animation du bouton
+                this.classList.add('bounce');
+                setTimeout(() => {
+                    this.classList.remove('bounce');
+                }, 500);
+                
+                // Faire défiler jusqu'au formulaire pour le bouton sticky
+                if (this.id === 'sticky-submit') {
+                    orderFormSection.classList.add('scroll-to-form');
+                    setTimeout(() => {
+                        orderFormSection.classList.remove('scroll-to-form');
+                    }, 1000);
+                    
+                    // Déclencher le défilement
+                    orderFormSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+                
+                // Valider le formulaire
+                if (!validateForm()) {
+                    return;
+                }
+                
+                // Remplir la modal avec les informations
+                document.getElementById('modalFullName').textContent = document.getElementById('fullname').value;
+                document.getElementById('modalPhone').textContent = document.getElementById('phone').value;
+                document.getElementById('modalColor').textContent = document.querySelector('input[name="color"]:checked').value;
+                document.getElementById('modalQuantity').textContent = document.getElementById('quantity').value;
+                document.getElementById('modalSize').textContent = document.getElementById('size').value;
+                document.getElementById('modalWilaya').textContent = document.getElementById('wilaya').value;
+                
+                const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+                document.getElementById('modalDeliveryMethod').textContent = deliveryMethod === 'home' ? 'التوصيل إلى المنزل' : 'التوصيل إلى المكتب';
+                
+                if (deliveryMethod === 'home') {
+                    document.getElementById('modalCommune').textContent = document.getElementById('commune').value;
+                    document.getElementById('modalCommuneRow').classList.remove('hidden');
+                } else {
+                    document.getElementById('modalCommuneRow').classList.add('hidden');
+                }
+                
+                document.getElementById('modalDeliveryCost').textContent = document.getElementById('delivery-price').textContent;
+                document.getElementById('modalProductPrice').textContent = document.getElementById('product-price').textContent;
+                document.getElementById('modalTotalPrice').textContent = document.getElementById('total-price').textContent;
+                
+                // Afficher la modal
+                orderModal.classList.add('active');
+            });
+        });
+
+        // Bouton d'édition dans la modal
+        editOrderBtn.addEventListener('click', function() {
+            orderModal.classList.remove('active');
+        });
+
+        // Confirmation de la commande
+        confirmOrderBtn.addEventListener('click', function() {
+            // Animation de confirmation
+            this.textContent = 'جارٍ التأكيد...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                // Afficher un message de succès
+                alert('شكراً لك على طلبك! سنتصل بك قريباً لتأكيد التفاصيل.');
+                
+                // Fermer la modal et réinitialiser le formulaire
+                orderModal.classList.remove('active');
+                document.getElementById('order-form').reset();
+                this.textContent = 'تأكيد الطلب';
+                this.disabled = false;
+                
+                // Réinitialiser le champ de la commune
+                document.getElementById('commune-container').classList.add('hidden');
+            }, 1500);
+        });
+
+        // Fermer la modal en cliquant à l'extérieur
+        orderModal.addEventListener('click', function(e) {
+            if(e.target === orderModal) {
+                orderModal.classList.remove('active');
+            }
+        });
+
+        function selectSize(size, element) {
+     // Enlever la classe "selected" de toutes les options
+  document.querySelectorAll('.size-option').forEach(el => {
+    el.classList.remove('border-blue-500', 'bg-blue-500', 'text-white');
+    el.classList.add('bg-white', 'border-gray-300', 'text-gray-800');
+  });
+
+  // Ajouter la classe "selected" à l'option choisie
+  element.classList.remove('bg-white', 'border-blue-500', 'text-gray-800');
+  element.classList.add('border-blue-500', 'bg-blue-500', 'text-white');
+
+  // Stocker la valeur dans l'input caché (si tu l’utilises)
+  document.getElementById('size').value = size;
+
+  // Masquer le message d'erreur si une taille est choisie (si présent)
+  const errorMsg = document.getElementById('size-error');
+  if (errorMsg) errorMsg.classList.add('hidden');
+  }
+
+  // Vérification avant soumission du formulaire
+  function validateForm() {
+    let size = document.getElementById('size').value;
+    if (!size) {
+      document.getElementById('size-error').classList.remove('hidden');
+      return false; // bloque l'envoi
+    }
+    return true;
+  }
+  // URL de votre Web App Google Apps Script (à remplacer par votre URL)
+const scriptURL = 'https://script.google.com/macros/s/AKfycbziFjKIJFyTTSxTUagnmSyMvQXtx1w7UpLQQU7NMTuMN99ntF9nwF7PvIlU6ukgncYc/exec';
+
+// Fonction pour envoyer les données à Google Sheets
+async function sendDataToGoogleSheets(formData) {
+    try {
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        return true;
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
+    }
+}
+
+// Modifier la fonction de confirmation de commande
+document.getElementById('confirmOrder').addEventListener('click', async function() {
+    // Animation de confirmation
+    this.textContent = 'جارٍ التأكيد...';
+    this.disabled = true;
+    
+    // Récupérer les données du formulaire
+    const formData = {
+        fullname: document.getElementById('fullname').value,
+        phone: document.getElementById('phone').value,
+        color: document.querySelector('input[name="color"]:checked').value,
+        size: document.getElementById('size').value,
+        quantity: document.getElementById('quantity').value,
+        deliveryMethod: document.querySelector('input[name="delivery"]:checked').value === 'home' ? 
+                         'التوصيل إلى المنزل' : 'التوصيل إلى المكتب',
+        wilaya: document.getElementById('wilaya').value,
+        commune: document.querySelector('input[name="delivery"]:checked').value === 'home' ? 
+                 document.getElementById('commune').value : '',
+        productPrice: document.getElementById('product-price').textContent.replace(' دج', ''),
+        deliveryCost: document.getElementById('delivery-price').textContent.replace(' دج', ''),
+        total: document.getElementById('total-price').textContent.replace(' دج', '')
+    };
+    
+    // Envoyer les données à Google Sheets
+    const success = await sendDataToGoogleSheets(formData);
+    
+    setTimeout(() => {
+        if (success) {
+            // Afficher un message de succès
+            alert('شكراً لك على طلبك! تم تسجيل طلبك بنجاح وسنتصل بك قريباً لتأكيد التفاصيل.');
+        } else {
+            // Message d'erreur
+            alert('حدث خطأ أثناء تسجيل الطلب. يرجى المحاولة مرة أخرى أو الاتصال بنا مباشرة.');
+        }
+        
+        // Fermer la modal et réinitialiser le formulaire
+        document.getElementById('orderModal').classList.remove('active');
+        document.getElementById('order-form').reset();
+        this.textContent = 'تأكيد الطلب';
+        this.disabled = false;
+        
+        // Réinitialiser le champ de la commune
+        document.getElementById('commune-container').classList.add('hidden');
+    }, 1500);
+});
+// Ajoutez cette fonction pour gérer les produits supplémentaires
+function handleQuantityChange() {
+    const quantity = parseInt(document.getElementById('quantity').value);
+    const additionalProducts = document.getElementById('additional-products');
+    const productList = document.getElementById('product-list');
+    
+    if (quantity > 1) {
+        additionalProducts.classList.remove('hidden');
+        productList.innerHTML = '';
+        
+        for (let i = 2; i <= quantity; i++) {
+            productList.innerHTML += `
+                <div class="product-item border rounded-lg p-4 bg-gray-50">
+                    <h4 class="font-medium mb-3 text-rose-700">الحذاء ${i}</h4>
+                    
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-medium mb-2">اللون <span class="text-red-500">*</span></label>
+                        <div class="flex flex-wrap gap-3">
+                            <label class="custom-radio flex items-center">
+                                <input type="radio" name="color-${i}" value="أسود" checked class="hidden">
+                                <span class="w-8 h-8 rounded-full bg-black border-2 border-white shadow-md mr-2 transition-all duration-300"></span>
+                                <span>أسود</span>
+                            </label>
+                            <label class="custom-radio flex items-center">
+                                <input type="radio" name="color-${i}" value="أبيض" class="hidden">
+                                <span class="w-8 h-8 rounded-full bg-white border-2 border-gray-200 shadow-md mr-2 transition-all duration-300"></span>
+                                <span>أبيض</span>
+                            </label>
+                            
+                        </div>
+                        <div id="color-${i}-error" class="error-message hidden">يرجى اختيار اللون</div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h3 class="text-lg font-semibold mb-3">اختر المقاس <span class="text-red-500">*</span></h3>
+                        <div class="flex flex-wrap gap-2">
+                            <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg cursor-pointer bg-white"
+                                 onclick="selectAdditionalSize('40', ${i}, this)">40</div>
+                            <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg cursor-pointer bg-white"
+                                 onclick="selectAdditionalSize('41', ${i}, this)">41</div>
+                            <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg cursor-pointer bg-white"
+                                 onclick="selectAdditionalSize('42', ${i}, this)">42</div>
+                            <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg cursor-pointer bg-white"
+                                 onclick="selectAdditionalSize('43', ${i}, this)">43</div>
+                            <div class="size-option w-12 h-12 flex items-center justify-center border border-gray-300 rounded-lg cursor-pointer bg-white"
+                                 onclick="selectAdditionalSize('44', ${i}, this)">44</div>
+                        </div>
+                        <input type="hidden" id="size-${i}" name="size-${i}">
+                        <div id="size-${i}-error" class="error-message hidden text-red-500 mt-2">يرجى اختيار المقاس</div>
+                    </div>
+                </div>
+            `;
+        }
+    } else {
+        additionalProducts.classList.add('hidden');
+    }
+    
+    calculateTotal();
+}
+
+// Fonction pour sélectionner la taille des produits supplémentaires
+function selectAdditionalSize(size, productIndex, element) {
+     // Enlever la classe "selected" de toutes les options de ce produit
+const productElement = element.closest('.product-item');
+productElement.querySelectorAll('.size-option').forEach(el => {
+   el.classList.remove('border-blue-500', 'bg-blue-500', 'text-white');
+    el.classList.add('bg-white', 'border-gray-300', 'text-gray-800');
+});
+
+// Ajouter la classe "selected" à l'option choisie
+element.classList.remove('bg-white', 'border-blue-500', 'text-gray-800');
+  element.classList.add('border-blue-500', 'bg-blue-500', 'text-white');
+  
+    // Stocker la valeur dans l'input caché
+    document.getElementById(`size-${productIndex}`).value = size;
+
+    // Masquer le message d'erreur
+    document.getElementById(`size-${productIndex}-error`).classList.add('hidden');
+}
+
+// Ajoutez cet écouteur d'événement pour la quantité
+document.getElementById('quantity').addEventListener('change', function() {
+    handleQuantityChange();
+    calculateTotal();
+});
+
+// Modifiez la fonction calculateTotal pour gérer les prix personnalisés
+function calculateTotal() {
+    const baseProductPrice = 2900;
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    const wilaya = document.getElementById('wilaya').value;
+    const commune = document.getElementById('commune').value;
+    const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+    
+    // ICI VOUS POUVEZ PERSONNALISER LES PRIX
+    // Exemple: prix différent selon la quantité
+    let productPricePerUnit = baseProductPrice;
+    
+    if (quantity === 2) {
+        productPricePerUnit = 2500; // Prix pour 2 articles
+    } else if (quantity >= 3) {
+        productPricePerUnit = 2333.3333333333333333; // Prix pour 3 articles ou plus
+    }
+    
+    const totalProductPrice = productPricePerUnit * quantity;
+    
+    // Calculer les frais de livraison
+    let deliveryCost = 0;
+    
+    if (deliveryMethod === 'home') {
+        deliveryCost = deliveryFees[commune] || 0;
+    } else {
+        deliveryCost = officeDeliveryFees[wilaya] || 0;
+    }
+    
+    // Calculer le total
+    const total = totalProductPrice + deliveryCost;
+    
+    // Mettre à jour l'affichage
+    document.getElementById('product-price').textContent = `${totalProductPrice} دج`;
+    document.getElementById('delivery-price').textContent = `${deliveryCost} دج`;
+    document.getElementById('total-price').textContent = `${total} دج`;
+}
+
+// Modifiez la fonction validateForm pour valider les produits supplémentaires
+function validateForm() {
+    let isValid = true;
+    const requiredFields = [
+        { id: 'fullname', errorId: 'fullname-error' },
+        { id: 'phone', errorId: 'phone-error' },
+        { id: 'size', errorId: 'size-error' },
+        { id: 'wilaya', errorId: 'wilaya-error' }
+    ];
+    
+    // Réinitialiser les erreurs
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field.id);
+        const error = document.getElementById(field.errorId);
+        
+        if (input && error) {
+            input.classList.remove('error-border');
+            error.classList.add('hidden');
+        }
+    });
+    
+    // Vérifier les champs obligatoires
+    requiredFields.forEach(field => {
+        const input = document.getElementById(field.id);
+        const error = document.getElementById(field.errorId);
+        
+        if (input && error && !input.value.trim()) {
+            input.classList.add('error-border');
+            error.classList.remove('hidden');
+            isValid = false;
+        }
+    });
+    
+    // Vérifier le numéro de téléphone
+    const phone = document.getElementById('phone').value;
+    const phoneError = document.getElementById('phone-error');
+    if (!/^\d{10}$/.test(phone)) {
+        document.getElementById('phone').classList.add('error-border');
+        phoneError.textContent = 'يرجى إدخال رقم هاتف صحيح (10 أرقام)';
+        phoneError.classList.remove('hidden');
+        isValid = false;
+    }
+    
+    // Vérifier la méthode de livraison à domicile
+    const deliveryMethod = document.querySelector('input[name="delivery"]:checked').value;
+    if (deliveryMethod === 'home') {
+        const commune = document.getElementById('commune').value;
+        const communeError = document.getElementById('commune-error');
+        
+        if (!commune) {
+            document.getElementById('commune').classList.add('error-border');
+            communeError.classList.remove('hidden');
+            isValid = false;
+        }
+    }
+    
+    // Valider les produits supplémentaires
+    const quantity = parseInt(document.getElementById('quantity').value) || 1;
+    if (quantity > 1) {
+        for (let i = 2; i <= quantity; i++) {
+            const size = document.getElementById(`size-${i}`).value;
+            const sizeError = document.getElementById(`size-${i}-error`);
+            
+            if (!size) {
+                sizeError.classList.remove('hidden');
+                isValid = false;
+            }
+        }
+    }
+    
+    return isValid;
+}
+
+// Modifiez la fonction d'envoi pour inclure les données supplémentaires
+async function sendDataToGoogleSheets(formData) {
+    try {
+        // Récupérer les données des produits supplémentaires
+        const quantity = parseInt(document.getElementById('quantity').value) || 1;
+        const additionalProducts = [];
+        
+        if (quantity > 1) {
+            for (let i = 2; i <= quantity; i++) {
+                const color = document.querySelector(`input[name="color-${i}"]:checked`).value;
+                const size = document.getElementById(`size-${i}`).value;
+                
+                additionalProducts.push({
+                    productNumber: i,
+                    color: color,
+                    size: size
+                });
+            }
+        }
+        
+        // Ajouter les produits supplémentaires aux données
+        formData.additionalProducts = additionalProducts;
+        
+        const response = await fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        return true;
+    } catch (error) {
+        console.error('Error:', error);
+        return false;
+    }
+}
+document.addEventListener("DOMContentLoaded", function () {
+    const submitBtn = document.getElementById("submit-btn");
+    const editOrderBtn = document.getElementById("editOrder");
+    const stickyButton = document.querySelector(".sticky-button");
+
+    // cacher sticky button après "تأكيد الطلب"
+    submitBtn.addEventListener("click", function () {
+        stickyButton.style.display = "none";
+    });
+
+    // réafficher sticky button après "تعديل"
+    editOrderBtn.addEventListener("click", function () {
+        stickyButton.style.display = "block";
+    });
+});
+
+    // swiper image
+document.addEventListener("DOMContentLoaded", function () {
+    const mainImage = document.getElementById("mainImage");
+    const thumbnails = document.querySelectorAll(".thumbnail");
+
+    let currentIndex = 0;
+
+    // fonction pour mettre à jour image + vignette active
+    function updateImage(index) {
+        mainImage.src = thumbnails[index].src;
+        thumbnails.forEach(t => t.classList.remove("border-blue-500"));
+        thumbnails[index].classList.add("border-blue-500"); // vignette active
+        currentIndex = index;
+    }
+    // clic sur les miniatures
+    thumbnails.forEach((thumb, index) => {
+        thumb.addEventListener("click", function () {
+            updateImage(index);
+        });
+    });
+
+    // swipe sur mobile
+    let startX = 0;
+    mainImage.addEventListener("touchstart", function(e) {
+        startX = e.touches[0].clientX;
+    });
+
+    mainImage.addEventListener("touchend", function(e) {
+        let endX = e.changedTouches[0].clientX;
+        if (startX - endX > 50) {
+            // swipe gauche -> image suivante
+            updateImage((currentIndex + 1) % thumbnails.length);
+        } else if (endX - startX > 50) {
+            // swipe droite -> image précédente
+            updateImage((currentIndex - 1 + thumbnails.length) % thumbnails.length);
+        }
+    });
+
+    // défilement automatique toutes les 3s
+    setInterval(() => {
+        updateImage((currentIndex + 1) % thumbnails.length);
+    }, 3000);
+
+    // initialisation
+    updateImage(0);
+
+   
+
+    
+
+    
+});
+
+
+// FAQ accordion
+const faqQuestions = document.querySelectorAll('.faq-question');
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', () => {
+                const answer = question.nextElementSibling;
+                const icon = question.querySelector('i');
+                
+                answer.classList.toggle('hidden');
+                icon.classList.toggle('transform');
+                icon.classList.toggle('rotate-180');
+            });
+        });
+
+         // Quand le DOM est prêt
+  document.addEventListener('DOMContentLoaded', () => {
+    const orderBtn = document.getElementById('order-btn');
+    const customerInfo = document.getElementById('order-form-section');
+
+    orderBtn.addEventListener('click', () => {
+      customerInfo.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  // Liste des images
+  const images = [
+    "img/img1.png",
+    "img/img10.png",
+    "img/img3.png",
+    "img/img4.jpg",
+    "img/img5.jpg",
+    "img/img6.png",
+    "img/img7.png"
+  ];
+
+  let currentIndex = 0;
+  const mainImage = document.getElementById("mainImage");
+  const thumbnails = document.querySelectorAll(".thumbnail");
+
+  
+
+  // Fonction image précédente
+  function prevImage() {
+    currentIndex = (currentIndex - 1 + images.length) % images.length;
+    mainImage.src = images[currentIndex];
+    updateActiveThumbnail();
+  }
+
+  // Fonction image suivante
+  function nextImage() {
+    currentIndex = (currentIndex + 1) % images.length;
+    mainImage.src = images[currentIndex];
+    updateActiveThumbnail();
+  }
+
+  
+    </script>
+</body>
+</html>
